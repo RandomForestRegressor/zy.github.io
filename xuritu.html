@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>诗意医韵:可视化养生之旅</title>
+  <!-- 引入 ECharts 库 -->
+  <script src="echarts.min.js"></script>
+  <style>
+    /* 返回按钮样式 */
+    .back-btn {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 50px;
+      height: 50px;
+      background: rgba(212, 175, 55, 0.8);
+      /* 与页面主色调一致 */
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+      color: white;
+      font-size: 18px;
+      font-family: "楷体", "KaiTi", sans-serif;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      opacity: 0.9;
+    }
+
+    .back-btn:hover {
+      background: rgba(212, 175, 55, 1);
+      transform: scale(1.05);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      opacity: 1;
+    }
+
+    .back-btn::before {
+      content: "←";
+      font-size: 14px;
+      margin-right: 8px;
+    }
+
+    /* .back-btn span {
+            white-space: nowrap;
+            transform: scale(0);
+            初始隐藏文字
+            transition: transform 0.3s ease;
+        } */
+
+    .back-btn:hover span {
+      transform: scale(1);
+      /* 悬停显示文字 */
+    }
+
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Microsoft YaHei', Arial, sans-serif;
+      background:
+        linear-gradient(rgba(245, 239, 224, 0.87),
+          rgba(245, 239, 224, 0.87)),
+        url('./img/011.png');
+      /* line-height: 1.8; */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      background-color: rgba(245, 239, 224, 0.5);
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .chart-container {
+      height: 750px;
+      width: 100%;
+    }
+
+    .title {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .title h1 {
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+
+    .title p {
+      font-size: 14px;
+      color: #666;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="title">
+      <h1 style="display: flex;position: relative;;left: 9%;">诗意医韵:可视化养生之旅</h1>
+      <!-- <p><a href="https://worldcoffeeresearch.org/work/sensory-lexicon/" target="_blank">来源链接</a></p> -->
+    </div>
+    <div class="chart-container" id="chartRef"></div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // 设置图表数据
+      const data = [
+        {
+          name: '春',
+          itemStyle: {
+            color: '#00FFFF'
+          },
+          children: [
+            {
+              name: '立春',
+              itemStyle: {
+                color: '#00FA9A'
+              },
+              children: [
+                { name: '韭菜炒虾', value: 1, itemStyle: { color: '#99FF33' } },
+                { name: '地黄粥', value: 1, itemStyle: { color: '#FFBF00' } },
+                { name: '菠萝无花果煲瘦肉汤', value: 1, itemStyle: { color: '#FFFF99' } }
+              ]
+            },
+            {
+              name: '雨水',
+              itemStyle: { color: '#00FF7F' },
+              children: [
+                { name: '口蘑鸡块', value: 1, itemStyle: { color: '#99FF33' } },
+                { name: '栗子鸡汤', value: 1, itemStyle: { color: '#FFBF00' } },
+                { name: '黑米党参粥', value: 1, itemStyle: { color: '#FFFF99' } }
+              ]
+            },
+            {
+              name: '惊蛰',
+              itemStyle: { color: '#00EE76' },
+              children: [
+                { name: '鱼肚炖鸽子', value: 1, itemStyle: { color: '#99FF33' } },
+                { name: '花生衣红枣汤', value: 1, itemStyle: { color: '#FFBF00' } },
+                { name: '桂圆糯米粥', value: 1, itemStyle: { color: '#FFFF99' } }
+              ]
+            },
+            {
+              name: '春分',
+              itemStyle: { color: '#00EE00' },
+              children: [
+                { name: '香椿拌豆腐', value: 1, itemStyle: { color: '#99FF33' } },
+                { name: '紫菜瘦肉汤', value: 1, itemStyle: { color: '#FFBF00' } },
+                { name: '百合杏仁粥', value: 1, itemStyle: { color: '#FFFF99' } }
+              ]
+            },
+            {
+              name: '清明',
+              itemStyle: { color: '#00CD00' },
+              children: [
+                { name: '素焖扁豆', value: 1, itemStyle: { color: '#99FF33' } },
+                { name: '鸡肝明目汤', value: 1, itemStyle: { color: '#FFBF00' } },
+                { name: '银耳粥', value: 1, itemStyle: { color: '#FFFF99' } }
+              ]
+            },
+            {
+              name: '谷雨',
+              itemStyle: { color: '#008B00' },
+              children: [
+                { name: '鲫鱼烧豆腐', value: 1, itemStyle: { color: '#99FF33' } },
+                { name: '翡翠白玉汤', value: 1, itemStyle: { color: '#FFBF00' } },
+                { name: '百合粥', value: 1, itemStyle: { color: '#FFFF99' } }
+              ]
+            }
+          ]
+        },
+        {
+          name: '夏',
+          itemStyle: { color: '#FF0000' },
+          children: [
+            {
+              name: '立夏',
+              itemStyle: { color: '#FF7256' },
+              children: [
+                {
+                  name: '丝瓜炒蛋',
+                  value: 1,
+                  itemStyle: { color: '#99FF33' },
+                  link: "https://zhuanlan.zhihu.com/"
+                },
+                { name: '海带绿豆汤', value: 1, itemStyle: { color: '#FFBF00' } },
+                { name: '荷叶绿豆粥', value: 1, itemStyle: { color: '#FFFF99' } }
+              ]
+            },
+            {
+              name: '小满',
+              itemStyle: { color: '#FF6347' },
+              children: [
+                { name: '芥末拌肚丝', value: 1, itemStyle: { color: '#99FF33' } },
+                { name: '冬瓜荷叶汤', value: 1, itemStyle: { color: '#FFBF00' } },
+                { name: '芦笋粥', value: 1, itemStyle: { color: '#FFFF99' } }
+              ]
+            },
+            {
+              name: '芒种',
+              itemStyle: { color: '#FF4040' },
+              children: [
+                { name: '豆芽炒海带丝', value: 1, itemStyle: { color: '#99FF33' } },
+                { name: '扁豆瘦肉汤', value: 1, itemStyle: { color: '#FFBF00' } },
+                { name: '莲子荷叶粥', value: 1, itemStyle: { color: '#FFFF99' } }
+              ]
+            },
+            {
+              name: '夏至',
+              itemStyle: { color: '#FF4500' },
+              children: [
+                { name: '马兰拌香干', value: 1, itemStyle: { color: '#99FF33' } },
+                { name: '莲藕排骨牛蒡汤', value: 1, itemStyle: { color: '#FFBF00' } },
+                { name: '荷叶茯苓粥', value: 1, itemStyle: { color: '#FFFF99' } }
+              ]
+            },
+            {
+              name: '小暑',
+              itemStyle: { color: '#EE4000' },
+              children: [
+                { name: '清炒绿豆芽', value: 1, itemStyle: { color: '#99FF33' } },
+                { name: '冬瓜竹笋汤', value: 1, itemStyle: { color: '#FFBF00' } },
+                { name: '绿豆粥', value: 1, itemStyle: { color: '#FFFF99' } }
+              ]
+            },
+            {
+              name: '大暑',
+              itemStyle: { color: '#EE3B3B' },
+              children: [
+                { name: '蕨菜炒冬菇', value: 1, itemStyle: { color: '#99FF33' } },
+                { name: '绿豆南瓜汤', value: 1, itemStyle: { color: '#FFBF00' } },
+                { name: '薄荷梗米粥', value: 1, itemStyle: { color: '#FFFF99' } }
+              ]
+            }
+          ]
+        },
+        {
+          name: '秋',
+          itemStyle: { color: '#FFC107' },
+          children: [
+            {
+              name: '立秋',
+              itemStyle: { color: '#FFD700' },
+              children: [
+                { name: '三鲜百合', value: 1, itemStyle: { color: '#FFB800' } },
+                { name: '枸杞山药粥', value: 1, itemStyle: { color: '#FFA500' } },
+                { name: '鱼胶圆肉山药水鸭汤', value: 1, itemStyle: { color: '#FFA000' } }
+              ]
+            },
+            {
+              name: '处暑',
+              itemStyle: { color: '#FFB300' },
+              children: [
+                { name: '麻酱菠菜', value: 1, itemStyle: { color: '#FFA700' } },
+                { name: '银耳番茄汤', value: 1, itemStyle: { color: '#FF8C00' } },
+                { name: '芝麻粥', value: 1, itemStyle: { color: '#FF9900' } }
+              ]
+            },
+            {
+              name: '白露',
+              itemStyle: { color: '#FFC800' },
+              children: [
+                { name: '白果芋泥', value: 1, itemStyle: { color: '#FFD200' } },
+                { name: '菊花枸杞肝片汤', value: 1, itemStyle: { color: '#FF8A00' } },
+                { name: '白枣莲子银杏粥', value: 1, itemStyle: { color: '#FF7F00' } }
+              ]
+            },
+            {
+              name: '秋分',
+              itemStyle: { color: '#FFE000' },
+              children: [
+                { name: '醋香黄鱼', value: 1, itemStyle: { color: '#FF9400' } },
+                { name: '猪肝枸杞汤', value: 1, itemStyle: { color: '#FF8000' } },
+                { name: '胡萝卜粥', value: 1, itemStyle: { color: '#FF7700' } }
+              ]
+            },
+            {
+              name: '寒露',
+              itemStyle: { color: '#FFD900' },
+              children: [
+                { name: '清蒸凤尾菇', value: 1, itemStyle: { color: '#FF6600' } },
+                { name: '白菜鸡汤', value: 1, itemStyle: { color: '#FF6D00' } },
+                { name: '山药萝卜粥', value: 1, itemStyle: { color: '#FF5C00' } }
+              ]
+            },
+            {
+              name: '霜降',
+              itemStyle: { color: '#FFE900' },
+              children: [
+                { name: '苦瓜炖牡蛎', value: 1, itemStyle: { color: '#FF5200' } },
+                { name: '五色紫菜汤', value: 1, itemStyle: { color: '#FF4500' } },
+                { name: '枸杞菊花粥', value: 1, itemStyle: { color: '#FF4000' } }
+              ]
+            }
+          ]
+        },
+        {
+          name: '冬',
+          itemStyle: { color: '#ffffff' },
+          children: [
+            {
+              name: '立冬',
+              itemStyle: { color: '#FCFCFC' },
+              children: [
+                { name: '番茄糖藕', value: 1, itemStyle: { color: '#99FF33' } },
+                { name: '老姜猪肚汤', value: 1, itemStyle: { color: '#FFBF00' } },
+                { name: '黑芝麻粥', value: 1, itemStyle: { color: '#FFFF99' } }
+              ]
+            },
+            {
+              name: '小雪',
+              itemStyle: { color: '#FAFAFA' },
+              children: [
+                { name: '葱爆羊肉', value: 1, itemStyle: { color: '#99FF33' } },
+                { name: '枸杞兔肉汤', value: 1, itemStyle: { color: '#FFBF00' } },
+                { name: '牛肚大米粥', value: 1, itemStyle: { color: '#FFFF99' } }
+              ]
+            },
+            {
+              name: '大雪',
+              itemStyle: { color: '#F7F7F7' },
+              children: [
+                { name: '蒜泥茼蒿', value: 1, itemStyle: { color: '#99FF33' } },
+                { name: '素笋汤', value: 1, itemStyle: { color: '#FFBF00' } },
+                { name: '山药板栗粥', value: 1, itemStyle: { color: '#FFFF99' } }
+              ]
+            },
+            {
+              name: '冬至',
+              itemStyle: { color: '#F5F5F5' },
+              children: [
+                { name: '蚝油双菇', value: 1, itemStyle: { color: '#99FF33' } },
+                { name: '牛肉红枣汤', value: 1, itemStyle: { color: '#FFBF00' } },
+                { name: '羊肉粥', value: 1, itemStyle: { color: '#FFFF99' } }
+              ]
+            },
+            {
+              name: '小寒',
+              itemStyle: { color: '#F2F2F2' },
+              children: [
+                {
+                  name: '酸梅排骨',
+                  value: 1,
+                  itemStyle: { color: '#99FF33' },
+                },
+                {
+                  name: '木耳山菌乌鸡汤',
+                  value: 1,
+                  itemStyle: { color: '#FFBF00' },
+                },
+                {
+                  name: '丝瓜番茄粥',
+                  value: 1,
+                  itemStyle: { color: '#FFFF99' },
+                }
+              ]
+            },
+            {
+              name: '大寒',
+              itemStyle: { color: '#FFFAFA' },
+              children: [
+                {
+                  name: '圆白菜鲜虾卷',
+                  value: 1,
+                  itemStyle: { color: '#99FF33' },
+                },
+                {
+                  name: '苦瓜鱼片汤',
+                  value: 1,
+                  itemStyle: { color: '#FFBF00' },
+                },
+                {
+                  name: '白术猪肚粥',
+                  value: 1,
+                  itemStyle: { color: '#FFFF99' },
+                }
+              ]
+            }
+          ]
+        }
+      ];
+
+      // 设置图表选项
+      const option = {
+        title: {
+          // text: '诗意医韵:可视化养生之旅',
+          text: '春夏秋冬养生食谱',
+          subtext: '点击节点可展示相关内容',
+          left: '13%',
+          textStyle: {
+            fontSize: 18,
+            fontWeight: 'bold',
+            color: '#333'
+          },
+          subtextStyle: {
+            fontSize: 12,
+            color: '#666'
+          }
+        },
+        tooltip: {
+          trigger: 'item',
+          formatter: function (params) {
+            return params.name;
+          }
+        },
+        series: {
+          type: 'sunburst',
+          data: data,
+          radius: [0, '95%'],
+          sort: undefined,
+          emphasis: {
+            focus: 'ancestor',
+            label: {
+              position: 'inside',
+              show: true
+            }
+          },
+          levels: [
+            {},
+            {
+              r0: '15%',
+              r: '35%',
+              itemStyle: {
+                borderWidth: 2
+              },
+              label: {
+                rotate: 'tangential',
+                fontSize: 16,
+                fontWeight: 'bold'
+              }
+            },
+            {
+              r0: '35%',
+              r: '70%',
+              label: {
+                align: 'right',
+                fontSize: 14
+              }
+            },
+            {
+              r0: '70%',
+              r: '72%',
+              label: {
+                position: 'outside',
+                padding: 3,
+                silent: false,
+                fontSize: 12
+              },
+              itemStyle: {
+                borderWidth: 3
+              }
+            }
+          ],
+          label: {
+            color: '#333',
+            fontSize: 12
+          },
+          itemStyle: {
+            borderColor: '#fff',
+            borderWidth: 1
+          },
+          animationDuration: 1000,
+          animationDurationUpdate: 900
+        }
+      };
+
+      // 初始化图表
+      const chartRef = document.getElementById('chartRef');
+      if (chartRef) {
+        const myChart = echarts.init(chartRef);
+        myChart.setOption(option);
+
+        // 处理点击事件
+        myChart.on('click', function (params) {
+          const node = params.data;
+          if (node && node.link) {
+            window.open(node.link, '_blank');
+          }
+        });
+
+        // 响应式调整
+        window.addEventListener('resize', function () {
+          myChart.resize();
+        });
+      }
+    });
+  </script>
+</body>
+<a href="javascript:history.back()" class="back-btn">
+  <span>返回</span>
+</a>
+
+</html>

@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中国医学发展时间轴（1911年之前）</title>
+    <style>
+        /* 保持图片容器尺寸不变 */
+        a {
+            display: block;
+            width: 100%;
+            height: auto;
+        }
+
+        .img {
+            width: 100%;
+            height: auto;
+        }
+
+        * {
+            padding: 0;
+            margin: 0;
+        }
+
+        .shell {
+            width: 100%;
+            position: relative;
+            padding: 80px 0;
+            transition: 0.3s ease 0s;
+            background-attachment: fixed;
+            background-size: cover;
+        }
+
+        .shell:before {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(99, 99, 99, 0.8);
+            content: "";
+        }
+
+        .header {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 80px;
+            position: relative;
+        }
+
+        .title {
+            color: #fff;
+            font-size: 46px;
+            font-weight: normal;
+            margin: 0;
+        }
+
+        .timeline {
+            display: flex;
+            margin: 0 auto;
+            flex-wrap: wrap;
+            flex-direction: column;
+            max-width: 700px;
+            position: relative;
+        }
+
+        .content-title {
+            font-family: "楷体", "KaiTi", "STKaiti", "SimKai", sans-serif;
+            font-weight: normal;
+            font-size: 66px;
+            margin: -10px 0 0 0;
+            transition: 0.3s;
+            padding: 0 10px;
+            box-sizing: border-box;
+            color: #ffffff;
+        }
+
+        .content-desc {
+            margin: 0;
+            font-size: 15px;
+            box-sizing: border-box;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 25px;
+        }
+
+        .timeline:before {
+            position: absolute;
+            left: 50%;
+            width: 2px;
+            height: 100%;
+            margin-left: -1px;
+            content: "";
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        .item {
+            padding: 40px 0;
+            opacity: 0.3;
+            filter: blur(2px);
+            transition: 0.5s;
+            box-sizing: border-box;
+            width: calc(50% - 40px);
+            display: flex;
+            position: relative;
+            transform: translateY(-80px);
+        }
+
+        .item:before {
+            content: attr(data-text);
+            letter-spacing: 3px;
+            width: 100%;
+            position: absolute;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 13px;
+            border-left: 2px solid rgba(255, 255, 255, 0.5);
+            top: 70%;
+            margin-top: -5px;
+            padding-left: 15px;
+            opacity: 0;
+            right: calc(-100% - 56px);
+            font: 900 20px '';
+            letter-spacing: 5px;
+        }
+
+        .item:nth-child(even) {
+            align-self: flex-end;
+        }
+
+        .item:nth-child(even):before {
+            right: auto;
+            text-align: right;
+            left: calc(-100% - 56px);
+            padding-left: 0;
+            border-left: none;
+            border-right: 2px solid rgba(255, 255, 255, 0.5);
+            padding-right: 15px;
+        }
+
+        .item--active {
+            opacity: 1;
+            transform: translateY(0);
+            filter: blur(0px);
+        }
+
+        .item--active:before {
+            top: 50%;
+            transition: 0.3s all 0.2s;
+            opacity: 1;
+        }
+
+        .item--active .content-title {
+            margin: -50px 0 20px 0;
+        }
+
+        .img {
+            max-width: 100%;
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 16px;
+            letter-spacing: 5px;
+            margin: 10px 0 0 0;
+            font-weight: normal;
+        }
+
+        .footer {
+            padding: 95px 0;
+            text-align: center;
+        }
+
+        .footer a {
+            color: #999;
+            display: inline-block;
+        }
+
+        @media only screen and (max-width: 767px) {
+            .item {
+                align-self: baseline !important;
+                width: 100%;
+                padding: 0 30px 150px 80px;
+            }
+
+            .item:before {
+                left: 10px !important;
+                padding: 0 !important;
+                top: 50px;
+                text-align: center !important;
+                width: 60px;
+                border: none !important;
+            }
+
+            .item:last-child {
+                padding-bottom: 40px;
+            }
+        }
+
+        @media only screen and (max-width: 767px) {
+            .timeline:before {
+                left: 40px;
+            }
+        }
+
+        /* 信息卡基础样式 */
+        .info-card {
+            position: absolute;
+            top: 0;
+            width: 320px;
+            background: rgba(255, 255, 255, 0.98);
+            border: 1px solid #d4af37;
+            border-radius: 8px;
+            padding: 20px;
+            opacity: 0;
+            transition: all 0.4s ease;
+            pointer-events: none;
+            z-index: 100;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        /* 智能定位系统 */
+        .info-card[data-side="left"] {
+            right: calc(100% + 30px);
+            transform: translateX(-20px);
+        }
+
+        .info-card[data-side="right"] {
+            left: calc(100% + 30px);
+            transform: translateX(20px);
+        }
+
+        /* 激活状态 */
+        .info-trigger.active+.info-card {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* 方向箭头 */
+        .info-card::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            border: 10px solid transparent;
+        }
+
+        .info-card[data-side="left"]::before {
+            left: 100%;
+            border-left-color: #d4af37;
+        }
+
+        .info-card[data-side="right"]::before {
+            right: 100%;
+            border-right-color: #d4af37;
+        }
+
+        /* 返回按钮样式 */
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background: rgba(212, 175, 55, 0.8);
+            /* 与页面主色调一致 */
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            color: white;
+            font-size: 18px;
+            font-family: "楷体", "KaiTi", sans-serif;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            opacity: 0.9;
+        }
+
+        .back-btn:hover {
+            background: rgba(212, 175, 55, 1);
+            transform: scale(1.05);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            opacity: 1;
+        }
+
+        .back-btn::before {
+            content: "←";
+            font-size: 14px;
+            margin-right: 8px;
+        }
+
+        /* .back-btn span {
+            white-space: nowrap;
+            transform: scale(0);
+            初始隐藏文字
+            transition: transform 0.3s ease;
+        } */
+
+        .back-btn:hover span {
+            transform: scale(1);
+            /* 悬停显示文字 */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="shell" id="shell">
+        <div class="header">
+            <h2 class="title">中国医学史发展时间轴</h2>
+            <h3 class="subtitle">中国医学史的辉煌成就</h3>
+        </div>
+        <div class="timeline">
+            <div class="item" data-text="针灸起源">
+                <div class="content">
+                    <!-- <a href="picture1.html"> -->
+                    <img src="./img/01.png" class="img info-trigger" data-position="right" data-info="acupuncture">
+                    <div class="info-card">
+                        <!-- 内容通过JS动态加载 -->
+                    </div>
+                    <!-- </a> -->
+                    <h2 class="content-title">先秦时期</h2>
+                    <p class="content-desc">
+                        伏羲氏创制九针<br>
+                        扁鹊（战国）完善针刺技
+                    </p>
+                </div>
+            </div>
+
+            <div class="item" data-text="医疗技术雏形">
+                <div class="content">
+                    <img src="./img/02.png" class="img info-trigger" data-position="left" data-info="xianqing">
+                    <div class="info-card"></div>
+                    <h2 class="content-title">先秦时期</h2>
+                    <p class="content-desc">
+                        战国扁鹊使用麻醉技术<br>
+                        并创立"望闻问切"四诊法雏形
+                    </p>
+                </div>
+            </div>
+
+            <div class="item" data-text="《黄帝内经》———医学理论系统化">
+                <div class="content">
+                    <img src="./img/03.png" class="img info-trigger" data-position="right" data-info="qinhan">
+                    <div class="info-card"></div>
+                    <h2 class="content-title">秦汉时期</h2>
+                    <p class="content-desc">
+                        确立阴阳五行、藏象经络、气血津液理论。<br>
+                        提出“整体观念”“治未病”思想。<br>
+                        记载解剖知识（如“胃长二尺六寸”）。
+                    </p>
+                </div>
+            </div>
+
+            <div class="item" data-text="《神农本草经》———药物学体系建立">
+                <div class="content">
+                    <img src="./img/04.png" class="img info-trigger" data-position="left" data-info="herb_processing">
+                    <div class="info-card"></div>
+                    <h2 class="content-title">秦汉时期</h2>
+                    <p class="content-desc">
+                        记载365种药物，按上、中、下三品分类，提出“四气五味”“君臣佐使”等药性理论，奠定中药学基础。。
+                    </p>
+                </div>
+            </div>
+
+            <div class="item" data-text="临床突破">
+                <div class="content">
+                    <img src="./img/05.jpg" class="img info-trigger" data-position="right" data-info="linchuang">
+                    <div class="info-card"></div>
+                    <h2 class="content-title">秦汉时期</h2>
+                    <p class="content-desc">
+                        华佗：麻沸散（约208年）、五禽戏<br>
+
+                        张仲景：《伤寒杂病论》（约210年）
+                    </p>
+                </div>
+            </div>
+
+            <div class="item" data-text="医药学技术创新">
+                <div class="content">
+                    <img src="./img/06.jpg" class="img info-trigger" data-position="left" data-info="weijin">
+                    <div class="info-card"></div>
+                    <h2 class="content-title">魏晋南北</h2>
+                    <p class="content-desc">
+                        葛洪《肘后备急方》（340年）记载青蒿治疟 <br>
+                        雷敩《雷公炮炙论》（5世纪）首部制药专著 <br>
+                    </p>
+                </div>
+            </div>
+
+            <div class="item" data-text="病因学革命">
+                <div class="content">
+                    <img src="./img/07.png" class="img info-trigger" data-position="right" data-info="shuitang">
+                    <div class="info-card"></div>
+                    <h2 class="content-title">隋唐时期</h2>
+                    <p class="content-desc">
+                        巢元方《诸病源候论》（610年）：<br>
+                        首部病因证候学专著，分67门论述1739种病候<br>
+                        首次明确区分天花（"登豆疮"）与麻疹,人痘接种法<br>
+                        记载"漆疮"过敏反应、糖尿病（"消渴"）并发症
+                    </p>
+                </div>
+            </div>
+
+            <div class="item" data-text="临床医学集大成">
+                <div class="content">
+                    <img src="./img/08.png" class="img info-trigger" data-position="left" data-info="shuitang2">
+                    <div class="info-card"></div>
+                    <h2 class="content-title">隋唐时期</h2>
+                    <p class="content-desc">
+                        孙思邈《千金方》（652年）：<br>
+                        收录5300余方，首创"复方"配伍（如温胆汤）<br>
+                        强调医德（《大医精诚》篇），记载导尿术、下颌关节复位法<br>
+                    </p>
+                </div>
+            </div>
+
+            <div class="item" data-text="法医学诞生">
+                <div class="content">
+                    <img src="./img/09.png" class="img info-trigger" data-position="right" data-info="songyuan">
+                    <div class="info-card"></div>
+                    <h2 class="content-title">宋元时期</h2>
+                    <p class="content-desc">
+                        宋慈《洗冤集录》（1247年）：<br>
+                        系统记载尸斑鉴别（"微赤色"）、窒息死（"缢沟紫赤"）<br>
+                        提出验尸九步法，影响朝鲜《新注无冤录》
+                    </p>
+                </div>
+            </div>
+
+            <div class="item" data-text="儿科独立">
+                <div class="content">
+                    <img src="./img/010.png" class="img info-trigger" data-position="left" data-info="erke">
+                    <div class="info-card"></div>
+                    <h2 class="content-title">宋元时期</h2>
+                    <p class="content-desc">
+                        钱乙《小儿药证直诀》（1119年）：<br>
+                        首创"六味地黄丸"（原治小儿五迟证）<br>
+                        提出"小儿纯阳"理论
+                    </p>
+                </div>
+            </div>
+
+            <div class="item" data-text="《本草纲目》———药学巅峰">
+                <div class="content">
+                    <img src="./img/011.png" class="img info-trigger" data-position="right" data-info="mingqing">
+                    <div class="info-card"></div>
+                    <h2 class="content-title">明清时期</h2>
+                    <p class="content-desc">
+                        载药1892种，附方11096首，科学分类药物形态与功效。<br>
+                        16世纪药物学集大成之作，影响世界药学发展。
+                    </p>
+                </div>
+            </div>
+
+            <div class="item" data-text="温病学体系完善">
+                <div class="content">
+                    <img src="./img/012.png" class="img info-trigger" data-position="left" data-info="mingqing2">
+                    <div class="info-card"></div>
+                    <h2 class="content-title">明清时期</h2>
+                    <p class="content-desc">
+                        吴有性《温疫论》（1642年）：<br>
+                        突破"六淫致病"，提出"戾气"学说（微生物概念雏形）
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script>
+
+        (function ($) {
+            $.fn.timeline = function () {
+                var selectors = {
+                    id: $(this),
+                    item: $(this).find(".item"),
+                    activeClass: "item--active",
+                    img: ".img"
+                };
+                // 将第一个时间轴项目激活，并设置时间轴背景图片为第一个项目的图片
+                selectors.item.eq(0).addClass(selectors.activeClass);
+                selectors.id.css(
+                    "background-image",
+                    "url(" +
+                    selectors.item.first()
+                        .find(selectors.img)
+                        .attr("src") +
+                    ")"
+                );
+                // 获取时间轴项目的总数
+                var itemLength = selectors.item.length;
+                // 当页面滚动时，触发滚动事件
+                $(window).scroll(function () {
+                    var max, min;
+                    // 获取页面滚动的距离
+                    var pos = $(this).scrollTop();
+                    selectors.item.each(function (i) {
+                        // 获取当前时间轴项目的最小和最大高度
+                        min = $(this).offset().top;
+                        max = $(this).height() + $(this).offset().top;
+                        var that = $(this);
+                        // 如果滚动到最后一个项目，并且超过了当前项目高度的一半，
+                        // 则将最后一个项目设置为激活状态，并设置背景图片为最后一个项目的图片
+                        if (i == itemLength - 2 && pos > min + $(this).height() / 2) {
+                            selectors.item.removeClass(selectors.activeClass);
+                            selectors.id.css(
+                                "background-image",
+                                "url(" +
+                                selectors.item.last()
+                                    .find(selectors.img)
+                                    .attr("src") +
+                                ")"
+                            );
+                            selectors.item.last().addClass(selectors.activeClass);
+                        }
+                        // 如果当前滚动位置在当前项目的最小和最大高度之间，
+                        // 则将当前项目设置为激活状态，并设置背景图片为当前项目的图片
+                        else if (pos <= max - 10 && pos >= min) {
+                            selectors.id.css(
+                                "background-image",
+                                "url(" +
+                                $(this)
+                                    .find(selectors.img)
+                                    .attr("src") +
+                                ")"
+                            );
+                            selectors.item.removeClass(selectors.activeClass);
+                            $(this).addClass(selectors.activeClass);
+                        }
+                    });
+                });
+            };
+        })(jQuery)
+        /*
+        最后，我们调用 timeline 插件并传入时间轴的 ID 作为参数。
+        这将启用时间轴插件并为该时间轴绑定滚动事件。
+        */
+        $("#shell").timeline();
+
+    </script>
+
+    <script>
+        // 信息卡数据源
+        const infoContents = {
+            acupuncture: {
+                title: '针灸起源发展简介',
+                content: `　⚗️针灸由“针”和“灸”构成，是中医学的重要组成部分之一，
+                其内容包括针灸理论、腧穴、针灸技术以及相关器具，在形成、应用和发展的过程中，
+                具有鲜明的中华民族文化与地域特征，是基于中华民族文化和科学传统产生的宝贵遗产。`,
+                defaultSide: 'right' // 默认显示方向
+            },
+            // 其他图片数据...
+            xianqing: {
+                title: '医疗技术雏形简介',
+                content: `
+            <ul class="herb-list">
+                <li>⚗️ 先秦时期，人们对疾病的认知逐渐丰富。甲骨文中已有“疒”（疾病）及相关病症的记载，反映了商周时期对疾病的初步分类‌
+。例如，甲骨文中记载了疟、蛊等疾病‌。</li>
+                <li>🔥 先秦时期出现了许多著名的医家，如扁鹊（秦越人），他奠定了中医学的切脉诊断方法‌
+。此外，脉诊雏形、针灸理论、药物配伍等技术也逐渐形成‌</li>
+            </ul>
+        `,
+                defaultSide: 'left'
+            },
+            qinhan: {
+                title: '秦汉时期医疗理论系统化简介',
+                content: `
+                <ul class="herb-list">
+                <li>⚗️ 秦汉时期医疗理论系统化发展的主要标志是辩证论治思想的确立和四诊法的形成‌。秦汉时期的医学家们在总结前人经验的基础上，逐步形成了系统的辩证论治理论，这一理论体系在后世产生了深远的影响。</li>
+                <li>🔥汉时期的医学理论还包括阴阳学说和养生理论。阴阳学说在《黄帝内经》中有详细论述，强调人体内部的阴阳平衡对健康的重要性。</li>
+            </ul>　
+                `,
+                defaultSide: 'right' // 默认显示方向
+            },
+            herb_processing: {
+                title: '药物学体系建立简介',
+                content: `
+            <ul class="herb-list">
+                先秦时期药物学体系的建立‌主要体现在对药物的初步认识和利用上，这一时期的中药使用多基于经验积累，尚未形成系统的理论体系。‌“神农尝百草”‌的
+                传说反映了先民们在生产生活中逐渐发现了某些植物、动物和矿物具有治疗疾病的作用，从而开始了对中药的初步认识和利用‌
+。
+            </ul>
+        `,
+                defaultSide: 'left'
+            },
+            linchuang: {
+                title: '秦汉时期临床突破简介',
+                content: `
+           1、辩证论治思想的确立.辩证论治的思想出现于先秦.秦汉时期,经过无数医家的努力,特别是东汉张仲景《伤寒杂病论》中以六经论伤寒、以脏腑辨杂病,形成了一套理法方药相结合的体系,建立了辨证论治的基本规范.确立了四诊、八纲、脏腑、经络、三因、八法等辨证论治的基本理论.
+2、出现了医案.西汉淳于意在继承前入学术经验的基础上,记录所诊治病人必详列姓名、身份、籍里、性别、病名、病因、脉证、诊断、治疗(方药、针灸、含漱药、窜药等),预防等,反映了早期医案淳朴可鉴的学术风格,为后世医家书写医案树立了榜样.
+3、在临床医学进展突出.华佗创用麻沸散施行外科手术,虽然其方药、操作技术失传,但它却在学术思想上启迪了外科医家.张仲景的《伤寒杂病论》在外感热病和内科杂病等辨证论治方面的理论与实践,被历代医家奉为圭臬.
+4、初步奠定药物方剂学体系.以《神农本草经》为代表,集东汉以前药物学术经验之大成,对历代本草学和方剂学发展有着深远的影响.《伤寒杂病论》所载方剂及方剂学理论,被尊为众方之祖.
+        `,
+                defaultSide: 'right'
+            },
+            weijin: {
+                title: '魏晋南北朝医学突破简介',
+                content: `
+         药物学的重大成果是陶弘景所著《本草经集注》一书，该书记载药物730 余种，比《神农本草经》多出一倍。书中对各种药物的性味、形态和采集、
+         监制等方面的认识，也比过去有所提高，并且首创药物分类法，按照药物的自然属性和医疗用途把700多种药物分为7个门类，成为我国古代药物标准分类法，对后世药典的编纂产生重要影响。
+        `,
+                defaultSide: 'right'
+            },
+            shuitang: {
+                title: '隋唐时期病因学革命简介',
+                content: `
+        隋唐时期病因学革命主要体现在对病因和症候的深入研究上，这一时期的医学家们对疾病的成因进行了系统的分析和总结。‌
+隋唐时期的医学成就主要体现在《诸病源候论》的编撰上。这部由隋朝著名医学家巢元方主持编写的巨著，是我国最早的病源证候学专著。
+        `,
+                defaultSide: 'right'
+            },
+            shuitang2: {
+                title: '隋唐时期临床医大集成简介',
+                content: `
+       隋唐时期，许多重要的医学著作被编纂和整理，其中最著名的是《诸病源候论》和《备急千金要方》。巢元方编写的《诸病源候论》共有50卷，
+       分为67节，论述了1700种病症，涉及内科、外科、儿科、妇科、皮肤学、眼科及耳鼻喉科等多个领域，是中国最早的病因证候学记录之一‌
+。孙思邈的《备急千金要方》则是一部综合性临床医学著作，包含了内科、外科、妇科、儿科等各科的医方和治疗方法‌。
+        `,
+                defaultSide: 'right'
+            },
+            songyuan: {
+                title: '宋元时期法医学诞生简介',
+                content: `
+      宋慈的法医学成就主要体现在他的著作《洗冤集录》中。这本书系统地总结了宋慈在法医学领域的实践经验，包括尸体检验、毒物检验、急救措施等内容，
+      为后世法医学的发展奠定了重要基础‌。《洗冤集录》不仅在宋代被广泛使用，还在后世被多次修订和传播，对法医学的发展产生了深远的影响‌。
+在宋元时期，法医学的发展得益于当时的社会背景和法律制度的完善。宋朝皇帝重视法律和司法公正，推动了法医学的规范化发展。宋太祖赵匡胤登基后，
+重视法律的执行和司法公正，使得法医学在宋朝得到了进一步的发展和完善‌。此外，宋朝的中央集权加强和文官制度的实施，也提升了法医学的专业水平和文化素养‌。
+        `,
+                defaultSide: 'right'
+            },
+            erke: {
+                title: '宋元时期儿科独立的简介',
+                content: `
+     ‌钱乙的贡献和《小儿药证直诀》的内容‌
+钱乙在儿科领域有着卓越的成就。他不仅在临床实践中积累了丰富的经验，还通过研究古代医书和临床案例，创立了适合小儿诊治的“五脏辨证”法。
+他的著作《小儿药证直诀》详细记录了23种病症的病理现象及治疗方法，其中包括著名的六味地黄丸方剂。这部著作不仅在当时具有极高的学术价值，
+而且对后世也产生了深远的影响，被誉为儿科的经典著
+        `,
+                defaultSide: 'right'
+            },
+            mingqing: {
+                title: '明清时期本草纲目的简介',
+                content: `
+     内容概述 :
+《本草纲目》分为十六部，六十类，包括水部、火部、土部、金石部、草部、谷部、菜部、果部、木部、服器部、虫部、鳞部、介部、禽部、兽部、人部等‌
+。书中详细描述了药物的形态、性质、用途，并附有一万一千多个药方和一千一百多幅插图‌。此外，书中还涉及了生物、化学、天文、地理、地质、采矿等多个领域‌。
+学术价值和影响 :
+《本草纲目》不仅是中国医药史上的里程碑，还对国际药学、生物学、农学、化学等领域产生了深远影响。该书被翻译成多种文字，广泛传播到国外‌。其药物分类法和药性理论对现代植物分类和药物研究仍有重要影响‌
+
+        `,
+                defaultSide: 'right'
+            },
+            mingqing2: {
+                title: '明清时期温病学体系完善的简介',
+                content: `
+    温病学专著的涌现‌：明清时期，温病学逐渐形成了独立且完善的理论体系，涌现出众多具有深远影响的温病学专著。
+    其中，明代吴又可的《温疫论》、清代叶天士的《温热论》、吴鞠通的《温病条辨》、王孟英的《温热经纬》以及雷少逸的《时病论》等，都是这一时期的代表性著作‌。
+        `,
+                defaultSide: 'right'
+            },
+        };
+
+        document.querySelectorAll('.info-trigger').forEach(trigger => {
+            // 初始化信息卡
+            const card = trigger.nextElementSibling;
+            const infoKey = trigger.dataset.info;
+
+            // 注入内容
+            card.innerHTML = `
+            <h3>${infoContents[infoKey].title}</h3>
+            <div class="info-body">${infoContents[infoKey].content}</div>
+        `;
+
+            // 点击交互
+            trigger.addEventListener('click', function (e) {
+                e.stopPropagation();
+
+                // 关闭其他信息卡
+                document.querySelectorAll('.info-trigger').forEach(t => {
+                    if (t !== this) t.classList.remove('active');
+                });
+
+                // 切换当前状态
+                const isActive = this.classList.toggle('active');
+
+                // 设置显示方向
+                const userDefined = this.dataset.position; // 用户指定方向
+                const autoSide = checkAutoPosition(this); // 自动检测方向
+                card.dataset.side = userDefined || autoSide || infoContents[infoKey].defaultSide;
+            });
+        });
+
+        // 自动位置检测函数
+        function checkAutoPosition(trigger) {
+            const rect = trigger.getBoundingClientRect();
+            const cardWidth = 320;
+
+            // 右侧空间检测
+            if (rect.right + cardWidth + 30 > window.innerWidth) return 'left';
+            // 左侧空间检测
+            if (rect.left - cardWidth - 30 < 0) return 'right';
+            return null;
+        }
+
+        // 全局点击关闭
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.info-trigger').forEach(t => {
+                t.classList.remove('active');
+            });
+        });
+    </script>
+    <a href="javascript:history.back()" class="back-btn">
+        <span>返回</span>
+    </a>
+</body>
+
+</html>

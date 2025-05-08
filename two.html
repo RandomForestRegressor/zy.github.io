@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>知识图谱</title>
+    <script src="./js/echarts.min.js"></script>
+</head>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="./js/echarts.min.js"></script>
+</head>
+
+<body>
+<div id="garps" class="container" style="width:1200px;height: 800px">// class="container",container可以改成container-fluid\"rightpart"宽度自适应部分"leftpart"width200的左边栏
+    <script src="./js/echarts.min.js"></script>
+    <script>
+        var chart_b859ef36a1b245b2b1eb24efe9b62146 = echarts.init(
+            document.getElementById('garps'), 'white', {renderer: 'canvas'});
+        option = {
+            backgroundColor: '	#222B28FF',//这块是背景色可以改成无色或白色
+
+            grid: {
+                left: '10%',
+                top: 60,
+                right: '10%',
+                bottom: 60,
+            },
+            toolbox: {
+                feature: {
+                    saveAsImage: {}
+                }
+            },
+            series: [{
+                type: 'graph',
+                layout: 'force',
+                force: {
+                    repulsion: 1000,
+                    edgeLength: 70,
+                    layoutAnimation: true,
+                },
+                symbolSize: 70,
+                nodeScaleRatio: 1, //图标大小是否随鼠标滚动而变
+                roam: true, //缩放
+                draggable: true, //节点是否可以拖拽
+                focusNodeAdjacency: true, //是否在鼠标移到节点上的时候突出显示节点以及节点的边和邻接节点
+                edgeSymbol: null,
+                label: {
+                    normal: {
+                        show: true,
+                        position: 'inside',
+                        color: 'gold'
+                    }
+                },
+                edgeLabel: {
+                    normal: {
+                        show: true,
+                        textStyle: {
+                            fontSize: 12,
+                            color: '#b18787'
+                        },
+                        formatter: "{c}"
+                    }
+                },
+                categories: [{
+                    name: '亲人',
+                }, {
+                    name: '租户',
+                    symbol: 'rect'
+                }],
+                itemStyle: {
+                    normal: {
+                        borderColor: '#222b28',
+                        borderWidth: 2,
+                        shadowBlur: 10,
+                        shadowColor: '#b18787',
+                        color: '#3b5478',
+                    }
+                },
+                lineStyle: {
+                    normal: {
+                        opacity: 0.9,
+                        width: 2,
+                        curveness: 0.3,
+                        color: {
+                            type: 'linear',
+                            x: 0,
+                            y: 0,
+                            x2: 0,
+                            y2: 1,
+                            colorStops: [{
+                                offset: 0,
+                                color: '#e0f55a' // 0% 处的颜色
+                            }, {
+                                offset: 1,
+                                color: '#e8f1e8' // 100% 处的颜色
+                            }],
+                            globalCoord: false // 缺省为 false
+                        }
+                    }
+                },
+                symbolKeepAspect: false,
+                data: [{
+                    name: '李时珍',
+                },
+                    {
+                        name: '《本草纲目》',
+                    },
+                    {
+                        name: '药学',
+                    },
+                    {
+                        name: '扁鹊',
+
+                    },
+                    {
+                        name: '麻沸散',
+
+                    },
+                    {
+                        name: '五禽戏',
+
+                    },
+                    {
+                        name: '医疗外科',
+                    },
+                    {
+                        name: '《伤寒杂病论》',
+
+                    },
+                    {
+                        name: '张仲景',
+                    }
+                ],
+                links: [{
+                    source: 0,
+                    target: 1,
+                    value: ''
+                },
+                    {
+                        source: 0,
+                        target: 2,
+                        value: ''
+                    },
+                    {
+                        source: 0,
+                        target: 3,
+                        value: ''
+                    },
+                    {
+                        source: 0,
+                        target: 4,
+                        value: ''
+                    },
+                    {
+                        source: 0,
+                        target: 5,
+                        value: ''
+                    },
+                    {
+                        source: 5,
+                        target: 6,
+                        value: ''
+
+                    },
+                    {
+                        source: 5,
+                        target: 7,
+                        value: ''
+                    },
+                    {
+                        source: 5,
+                        target: 8,
+                        value: ''
+                    },
+                    {
+                        source: 5,
+                        target: 9,
+                        value: ''
+                    }
+                ],
+            }]
+        }
+        chart_b859ef36a1b245b2b1eb24efe9b62146.setOption(option);
+
+
+    </script>
+</div>
+</body>
+</html>
+

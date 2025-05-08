@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中医文化传承</title>
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
+    <style>
+        /* 返回按钮样式 */
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background: rgba(212, 175, 55, 0.8);
+            /* 与页面主色调一致 */
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            color: white;
+            font-size: 18px;
+            font-family: "楷体", "KaiTi", sans-serif;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            opacity: 0.9;
+        }
+
+        .back-btn:hover {
+            background: rgba(212, 175, 55, 1);
+            transform: scale(1.05);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            opacity: 1;
+        }
+
+        .back-btn::before {
+            content: "←";
+            font-size: 14px;
+            margin-right: 8px;
+        }
+
+        /* .back-btn span {
+            white-space: nowrap;
+            transform: scale(0);
+            初始隐藏文字
+            transition: transform 0.3s ease;
+        } */
+
+        .back-btn:hover span {
+            transform: scale(1);
+            /* 悬停显示文字 */
+        }
+
+
+        /* 古风样式 */
+        body {
+            background:
+                linear-gradient(rgba(245, 239, 224, 0.5),
+                    rgba(245, 239, 224, 0.6)),
+                url('./img/梅兰竹菊.jpg');
+            font-family: '楷体', KaiTi, serif;
+            /* line-height: 1.8; */
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 2rem;
+            border: 12px solid transparent;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #8b0000;
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        h1:after {
+            content: '';
+            display: block;
+            width: 120px;
+            height: 3px;
+            background: #d4af37;
+            margin: 1rem auto;
+        }
+
+        .era-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-left: 4px solid #8b4513;
+            transition: all 0.3s;
+        }
+
+        .era-card:hover {
+            transform: translateX(10px);
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .highlight {
+            color: #b22222;
+            font-weight: bold;
+        }
+
+        /* 关键修正：强制裁剪超出内容 */
+        .swiper-container {
+            width: 100%;
+            height: 500px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+            position: relative;
+            /* 新增！隐藏超出容器的幻灯片 */
+        }
+
+        .swiper-slide {
+            width: 100%;
+            /* 单张幻灯片占满容器宽度 */
+            box-sizing: border-box;
+        }
+
+        .swiper-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* 图片等比例填充容器 */
+        }
+
+        .swiper-pagination {
+            position: absolute;
+            /* 新增分页点定位 */
+            bottom: 15px;
+            /* 调整底部间距 */
+        }
+
+        .image-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+
+        .image-item {
+            width: 22%;
+            margin-bottom: 1rem;
+            text-align: center;
+            height: 480px;
+            /* 固定容器高度 */
+            display: flex;
+            flex-direction: column;
+            /* 垂直排列内容 */
+        }
+
+        .image-item img {
+            width: 100%;
+            height: 270px;
+            /* 固定图片高度 */
+            object-fit: cover;
+            /* 等比例裁剪填充 */
+            border-radius: 4px;
+            /* 可选：添加圆角 */
+        }
+
+        .image-item p {
+            flex: 1;
+            /* 文本区域填充剩余空间 */
+            /* overflow: auto; */
+            /* 文本过长时显示滚动条 */
+            margin: 0.5rem 0;
+            padding: 0 0.5rem;
+        }
+
+        /* 古风按钮样式 */
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            margin-top: 1.5rem;
+            justify-content: center;
+        }
+
+        .ancient-btn {
+            font-family: '楷体', KaiTi, serif;
+            font-size: 1.2em;
+            color: #8b4513;
+            text-decoration: none;
+            padding: 0.8rem 2rem;
+            border: 2px solid #8b4513;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .ancient-btn:hover {
+            color: white;
+            background: #8b4513;
+            box-shadow: 0 4px 12px rgba(139, 69, 19, 0.2);
+        }
+
+        /* 按钮文字优化（可选：添加文字阴影增强立体感） */
+        .ancient-btn {
+            text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.8);
+        }
+
+        /* 新增新闻资讯样式 */
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            /* 新闻网格布局 */
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .news-item {
+            border: 1px solid #333;
+            /* 黑色边框 */
+            padding: 1.2rem;
+            border-radius: 4px;
+            transition: transform 0.3s;
+            background: white;
+            /* 白色背景 */
+        }
+
+        .news-item:hover {
+            transform: translateY(-5px);
+            /* 鼠标悬停上浮效果 */
+        }
+
+        .news-item h3 {
+            margin-top: 0;
+            color: #8b4513;
+            /* 古铜色标题 */
+            font-size: 1.1em;
+            border-bottom: 2px solid #8b4513;
+            /* 标题下画线 */
+            padding-bottom: 0.5rem;
+            /* 下画线与内容间距 */
+        }
+
+        .news-item p {
+            margin: 0.5rem 0 0;
+            font-size: 1em;
+            line-height: 1.6;
+            color: #666;
+            /* 浅灰色内容文字 */
+        }
+
+        .news-item {
+            display: block;
+            /* 使a标签占满整个框体可点击 */
+            text-decoration: none;
+            /* 去除默认下划线 */
+            color: inherit;
+            /* 继承父元素文字颜色 */
+            border: 1px solid #333;
+            padding: 1.2rem;
+            border-radius: 4px;
+            transition: transform 0.3s;
+            background: white;
+        }
+
+        .news-item:hover {
+            transform: translateY(-5px);
+            cursor: pointer;
+            /* 鼠标悬停显示指针 */
+        }
+
+        .news-item h3 {
+            margin-top: 0;
+            color: #8b4513;
+            font-size: 1.1em;
+            border-bottom: 2px solid #8b4513;
+            padding-bottom: 0.5rem;
+        }
+
+        .news-item p {
+            margin: 0.5rem 0 0;
+            font-size: 1em;
+            line-height: 1.6;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🗡️ 医路寻踪—中医发展可视化</h1>
+
+        <!-- 轮播图容器 -->
+        <div class="swiper-container banner" id="banner-slider">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide">
+                    <img src="img/中医2.png" />
+                </div>
+                <div class="swiper-slide">
+                    <img src="img/中药.png" />
+                </div>
+                <div class="swiper-slide">
+                    <img src="img/中医.png" />
+                </div>
+            </div>
+            <div class="swiper-pagination swiper-pagination-white"></div>
+        </div>
+
+        <div class="era-card">
+            <h1>中医的理论</h1>
+            <div class="image-container">
+                <div class="image-item">
+                    <img src="img/五行.png" alt="理论1">
+                    <p>中医理论，简称“中基”。它是以天人合一的叁个哲学观的整体理念与辨证论治、相似观（分形观）的循证观点为最大特色的祖国传统医学体系的基础与核心。</p>
+                    <!-- 中医基础理论的学说主要包括分形阴阳五行学说，脏象五系统学说（心系统、肝系统、脾系统、肺系统、肾系统）</p> -->
+                </div>
+                <div class="image-item">
+                    <img src="img/中药3.jpg" alt="理论2">
+                    <p>中药的理论体系主要包括阴阳五行、脏腑经络等学说。这些学说认为，人体内部各个器官之间以及人体与外界环境之间存在着相互依存、相互制约的关系。
+                    </p>
+                </div>
+                <div class="image-item">
+                    <img src="img/人体经络图.png" alt="理论3">
+                    <p>经络是人体运行气血的通道。包括经脉和络脉两部分，其中纵行的干线称为经脉，由经脉分出网络全身各个部位的分支称为络脉。</p>
+                </div>
+                <div class="image-item">
+                    <img src="img/中医养生图.jpg" alt="理论4">
+                    <p>中医养生，就是指通过各种方法颐养生命、增强体质、预防疾病，从而达到延年益寿的一种医事活动。中医养生重在整体性和系统性，目的是预防疾病，治未病。</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 新增新闻资讯卡框 -->
+        <div class="era-card">
+            <h3>医路寻踪·<b>新闻资讯</b></h3>
+            <p>薪火相传，推陈出新</p>
+            <div class="news-grid">
+                <a href="https://mp.weixin.qq.com/s?__biz=MzAwNzAwMDE0Mw==&mid=2651649851&idx=1&sn=add8ccc65905d2599b6f022ffd7a9f9f&chksm=80fc8e1bb78b070d6e237b5ceacff0205170a02e64f1cfeeff156fd947abd2831a9d8090b29d&scene=27"
+                    class="news-item">
+                    <h3>揭晓！2024年度江苏省中医药十大新闻”</h3>
+                    <p>为集中展示2024年全省中医药事业发展新成就、新特色、新亮点，增进社会各界对江苏中医药工作的了解和支持，评出了2024年度江苏省中医药十大新闻，现予以发布。
+                    </p>
+                </a>
+                <a href="http://tcm.china.com.cn/m/2025-04/09/content_43077736.html" class="news-item">
+                    <h3>《中医药典》新增两个“贵药”品种</h3>
+                    <p>贵州省2个中药品种“补血安神胶囊”与“金钱胆通颗粒”成功入选新增的28个中药成方制剂目录。</p>
+                </a>
+                <a href="https://mp.weixin.qq.com/s?__biz=MjM5NTk3MDU1Nw==&mid=2247573323&idx=2&sn=16569e95a61b4199cbf9aefb25025fb9&chksm=a7b69205f93982cb2f0108af151e40974e82ee845421ffb07def628d9ce4015d995e558faca7#rd"
+                    class="news-item">
+                    <h3>中医“未病”的生物学基础与疾病易感状态</h3>
+                    <p>暨南大学何蓉蓉团队在《Acta Pharmaceutica Sinica B》（IF=14.7）发表相关研究</p>
+                </a>
+                <a href="https://www.cnr.cn/hebei/gstjhebei/20250425/t20250425_527147876.shtml" class="news-item">
+                    <h3>郎中”进广场 中医药文化“热辣滚烫”</h3>
+                    <p>在中医适宜技术体验区，推拿、按摩、拔罐等项目使众多群众纷纷争先体验。在专业医护人员的操作下，古老而神奇的疗法让体验者在享受身心放松与舒缓的同时，体会到中医药在预防和治疗疾病中的独特作用。</p>
+                </a>
+                <a href="https://wjw.fujian.gov.cn/xxgk/gzdt/mtbd/202412/t20241226_6598022.htm" class="news-item">
+                    <h3>中医药： 以开放之姿拥抱新时代的到来</h3>
+                    <p>一纸经方传承千载，一缕药香穿越古今。
+                        蕴含着深邃智慧的中医药学，如一股不息的清泉，滋养着人们的身心健康。从古老典籍到现代实践，从偏远乡村到繁华都市，在科技飞速发展的今天，中医药历久弥新。它以开放包容的姿态，不断吸收新元素、实现新发展，为增进全人类健康福祉贡献中国智慧。
+                    </p>
+                </a>
+                <a href="https://www.thepaper.cn/newsDetail_forward_30717834" class="news-item">
+                    <h3>中医药文化进校园，本草经纶润童心”</h3>
+                    <p>为弘扬中医药文化，培养青少年对传统医学的兴趣，2025年4月15日、4月22日，上海市中医文献馆精心筹备的中医药科普课程走进中兴路小学，为同学们带来了一场别开生面的中医药文化体验之旅。</p>
+                </a>
+            </div>
+        </div>
+
+        <div class="era-card">
+            <h2>诗意医韵——中医养生之道</h2>
+            <div class="button-group">
+                <a href="xuritu.html" class="ancient-btn">四时养生</a>
+                <a href="yaofangtu.html" class="ancient-btn">药膳同源</a>
+                <a href="./jibing/jibing.html" class="ancient-btn">经络调理</a>
+                <a href="shiyang.html" class="ancient-btn">动静相宜</a>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+<script>
+    var bannerSlider = new Swiper('#banner-slider', {
+        direction: 'horizontal',
+        loop: false,
+        slidesPerView: 1,
+        pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+        },
+    });
+</script>
+<a href="javascript:history.back()" class="back-btn">
+    <span>返回</span>
+</a>
+
+</html>

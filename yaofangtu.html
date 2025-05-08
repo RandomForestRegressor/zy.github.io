@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>药材克重对比图</title>
+    <script src="echarts.min.js"></script>
+    <style>
+        /* 返回按钮样式 */
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background: rgba(212, 175, 55, 0.8);
+            /* 与页面主色调一致 */
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            color: white;
+            font-size: 18px;
+            font-family: "楷体", "KaiTi", sans-serif;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            opacity: 0.9;
+        }
+
+        .back-btn:hover {
+            background: rgba(212, 175, 55, 1);
+            transform: scale(1.05);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            opacity: 1;
+        }
+
+        .back-btn::before {
+            content: "←";
+            font-size: 14px;
+            margin-right: 8px;
+        }
+
+        /* .back-btn span {
+            white-space: nowrap;
+            transform: scale(0);
+            初始隐藏文字
+            transition: transform 0.3s ease;
+        } */
+
+        .back-btn:hover span {
+            transform: scale(1);
+            /* 悬停显示文字 */
+        }
+
+
+        #echart {
+            height: 700px;
+            width: 1200px;
+            margin: 0 auto;
+            background-color: transparent;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background:
+                linear-gradient(rgba(245, 239, 224, 0.87),
+                    rgba(245, 239, 224, 0.87)),
+                url('./img/07.png');
+        }
+
+        .loading {
+            margin: 20px;
+            font-size: 18px;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="echart"></div>
+
+    <script>
+        // 模拟数据
+        const data = [
+            ["清热祛湿", "柴胡苍术汤", 9, 9, 6, 6, 6, 4.5, 6, null, null, null, null, null, null, null, null, null, null, null, null, null, null],
+            ["散寒解表，祛风活血", "柴胡羌活汤", 9, null, 6, 6, null, null, null, 6, null, null, null, null, null, null, null, null, null, null, null, null, null],
+            ["祛风寒湿，除痹止痛", "独活羌活汤", null, 9, 9, 7.25, null, 4.5, 12, null, 6, null, null, null, null, null, null, null, null, null, null, null, null],
+            ["健脾益气，燥湿化痰", "六君子汤", null, null, null, null, null, 4.5, null, null, null, 4.5, 7.5, 8, 4.5, 4.5, null, null, null, null, null, null, null],
+            ["除湿化痰，理气和中", "平胃二陈汤", null, 6, null, null, null, 6, null, null, null, null, null, 6, 6, 6, 6, null, null, null, null, null, null],
+            ["益气解表，散寒祛湿", "人参败毒散", 4.5, null, 4.5, null, 4.5, 4.5, 4.5, 4.5, null, 4.5, null, 4.5, null, null, null, 4.5, 4.5, 4.5, null, null, null],
+            ["散寒解表，祛风活血", "羌活柴胡汤", 7.5, null, null, null, 7.5, 4.5, null, 7.5, null, null, null, null, null, null, null, null, null, null, 7.5, null, null],
+            ["发汗祛湿，兼清里热", "羌活冲和汤", null, 7.5, 7.5, 7.5, 7.5, 4.5, 7.5, 7.5, 7.5, null, null, null, null, null, null, null, null, null, 7.5, null, 7.5],
+            ["疏肝解郁，清热解毒", "清空汤", 7.5, null, 7.5, 7.5, null, 4.5, null, 7.5, null, null, null, null, null, null, null, null, null, null, 7.5, 7.5, null],
+            ["燥湿运脾，理气和胃", "半苓平胃散", null, 7.5, null, null, 7.5, 4.5, null, null, null, null, null, 7.5, 7.5, null, 7.5, null, null, null, null, null, null],
+            ["清热解毒，润肺止咳", "桔梗汤", 10, null, 10, null, null, 6, null, null, null, null, null, null, null, null, null, null, null, 6, null, null, null]
+        ];
+
+        // 索引映射
+        const indices = {
+            efficacy: 0, // 功效
+            name: 1,     // 药方名称
+            '柴胡': 2,
+            '苍术': 3,
+            '川芎': 4,
+            '防风': 5,
+            '广皮': 6,
+            '甘草': 7,
+            '独活': 8,
+            '羌活': 9,
+            '细辛': 10,
+            '人参': 11,
+            '白术': 12,
+            '茯苓': 13,
+            '半夏': 14,
+            '陈皮': 15,
+            '厚朴': 16,
+            '前胡': 17,
+            '枳壳': 18,
+            '桔梗': 19,
+            '黄芩': 20,
+            '黄连': 21,
+            '白芷': 22
+        };
+
+        // 坐标轴信息
+        const schema = [
+            { name: '功效', index: 0 },
+            { name: '药方', index: 1 },
+            { name: '柴胡', index: 2 },
+            { name: '苍术', index: 3 },
+            { name: '川芎', index: 4 },
+            { name: '防风', index: 5 },
+            { name: '广皮', index: 6 },
+            { name: '甘草', index: 7 },
+            { name: '独活', index: 8 },
+            { name: '羌活', index: 9 },
+            { name: '细辛', index: 10 },
+            { name: '人参', index: 11 },
+            { name: '白术', index: 12 },
+            { name: '茯苓', index: 13 },
+            { name: '半夏', index: 14 },
+            { name: '陈皮', index: 15 },
+            { name: '厚朴', index: 16 },
+            { name: '前胡', index: 17 },
+            { name: '枳壳', index: 18 },
+            { name: '桔梗', index: 19 },
+            { name: '黄芩', index: 20 },
+            { name: '黄连', index: 21 },
+            { name: '白芷', index: 22 }
+        ];
+
+        let groupCategories = [];
+        let groupColors = [];
+
+        function normalizeData(originData) {
+            const groupMap = {};
+
+            originData.forEach(row => {
+                const groupName = row[indices.name];
+                if (!groupMap[groupName]) {
+                    groupMap[groupName] = 1;
+                }
+            });
+
+            originData.forEach(row => {
+                row.forEach((item, index) => {
+                    if (index !== indices.efficacy &&
+                        index !== indices.name &&
+                        index !== indices.柴胡 &&
+                        index !== indices.苍术 &&
+                        index !== indices.川芎) {
+                        row[index] = parseFloat(item) || 0;
+                    }
+                });
+            });
+
+            for (const groupName in groupMap) {
+                if (groupMap.hasOwnProperty(groupName)) {
+                    groupCategories.push(groupName);
+                }
+            }
+
+            const hStep = Math.round(300 / (groupCategories.length - 1));
+            for (let i = 0; i < groupCategories.length; i++) {
+                groupColors.push(echarts.color.modifyHSL('#5A94DF', hStep * i));
+            }
+        }
+
+        function getOption(data) {
+            return {
+                backgroundColor: 'transparent',
+                tooltip: {
+                    padding: 10,
+                    backgroundColor: '#222',
+                    borderColor: '#777',
+                    borderWidth: 1
+                },
+                title: [
+                    {
+                        text: '中医调理药方功效',
+                        top: 20,
+                        left: 'center',
+                        textStyle: {
+                            color: '#333',
+                            fontSize: 20
+                        }
+                    }
+                ],
+                visualMap: {
+                    show: true,
+                    type: 'piecewise',
+                    categories: groupCategories,
+                    dimension: indices.name,
+                    inRange: {
+                        color: [
+                            '#FF6B6B', '#4ECDC4', '#88D8B0', '#3D9143', '#5D4037',
+                            '#F7CAC9', '#C88537', '#4A90E2', '#9B59B6', '#F8E47F',
+                            '#80DAEB', '#FFB6C1', '#7D3C98', '#F4D03F'
+                        ]
+                    },
+                    outOfRange: {
+                        color: ['#ccc']
+                    },
+                    top: 20,
+                    left: 10,
+                    textStyle: {
+                        color: '#000'
+                    },
+                    realtime: false
+                },
+                parallelAxis: [
+                    { dim: 0, name: schema[0].name, scale: true, nameLocation: 'end' },
+                    { dim: 20, name: schema[20].name, nameLocation: 'end' },
+                    { dim: 2, name: schema[2].name, nameLocation: 'end' },
+                    { dim: 4, name: schema[4].name, nameLocation: 'end' },
+                    { dim: 3, name: schema[3].name, nameLocation: 'end' },
+                    { dim: 5, name: schema[5].name, nameLocation: 'end' },
+                    { dim: 6, name: schema[6].name, nameLocation: 'end' },
+                    { dim: 7, name: schema[7].name, nameLocation: 'end' },
+                    { dim: 8, name: schema[8].name, nameLocation: 'end' },
+                    { dim: 9, name: schema[9].name, nameLocation: 'end' },
+                    { dim: 10, name: schema[10].name, nameLocation: 'end' },
+                    { dim: 11, name: schema[11].name, nameLocation: 'end' },
+                    { dim: 12, name: schema[12].name, nameLocation: 'end' },
+                    { dim: 13, name: schema[13].name, nameLocation: 'end' },
+                    { dim: 14, name: schema[14].name, nameLocation: 'end' },
+                    { dim: 15, name: schema[15].name, nameLocation: 'end' },
+                    { dim: 16, name: schema[16].name, nameLocation: 'end' },
+                    { dim: 17, name: schema[17].name, nameLocation: 'end' },
+                    { dim: 18, name: schema[18].name, nameLocation: 'end' },
+                    { dim: 19, name: schema[19].name, nameLocation: 'end' },
+                    { dim: 21, name: schema[21].name, nameLocation: 'end' },
+                    { dim: 22, name: schema[22].name, nameLocation: 'end' }
+                ],
+                parallel: {
+                    left: 100,
+                    top: 50,
+                    width: 800,
+                    layout: 'vertical',
+                    parallelAxisDefault: {
+                        type: 'category',
+                        name: '药材克重',
+                        nameLocation: 'end',
+                        nameGap: 50,
+                        nameTextStyle: {
+                            color: '#000',
+                            fontSize: 14
+                        },
+                        axisLine: {
+                            lineStyle: {
+                                color: '#aaa'
+                            }
+                        },
+                        axisTick: {
+                            lineStyle: {
+                                color: '#777'
+                            }
+                        },
+                        splitLine: {
+                            show: false
+                        },
+                        axisLabel: {
+                            color: '#000'
+                        },
+                        realtime: false
+                    }
+                },
+                animation: false,
+                series: [
+                    {
+                        name: '药材克重',
+                        type: 'parallel',
+                        inactiveOpacity: 0.5,
+                        activeOpacity: 0.8,
+                        progressive: 500,
+                        smooth: 0.8,
+                        data: data,
+                        lineStyle: {
+                            width: 2,
+                            opacity: 0.8
+                        },
+                        emphasis: {
+                            lineStyle: {
+                                width: 3,
+                                opacity: 1
+                            }
+                        }
+                    }
+                ]
+            };
+        }
+
+        // 页面加载完成后初始化图表
+        document.addEventListener('DOMContentLoaded', function () {
+            const chartDom = document.getElementById('echart');
+            if (!chartDom) return;
+
+            normalizeData(data);
+            const chartInstance = echarts.init(chartDom);
+            chartInstance.setOption(getOption(data));
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <meta http-equiv="refresh" content="50;url='three-1.html'"> -->
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="./css/style.css">
+    <style>
+        /* 新增返回按钮样式 */
+        .back-btn {
+            position: absolute;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 8px 25px;
+            background: rgba(75, 216, 186, 0.3);
+            border: 1px solid #4bd8ba;
+            border-radius: 15px;
+            color: #4bd8ba;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Microsoft YaHei';
+            font-size: 16px;
+            backdrop-filter: blur(5px);
+        }
+
+        .back-btn:hover {
+            background: #4bd8ba;
+            color: #1a2a3b;
+            box-shadow: 0 0 15px #4bd8ba;
+        }
+    </style>
+</head>
+
+<body>
+<!-- 头部模块 -->
+<div class="header" style="position: relative;"> <!-- 添加相对定位 -->
+    <!-- 返回按钮 -->
+    <button class="back-btn" onclick="goToHomePage()">
+        <span>◄</span> 返回上级
+    </button>
+
+    <script>
+        function goToHomePage() {
+            window.location.href = './start.html';
+        }
+    </script>
+
+    <div class="title">
+        <span>中国医学可视化大屏展示系统</span>
+    </div>
+    <div class="time">
+        <span>中医-辉煌成就</span>
+    </div>
+    <!-- <div class="company">
+    <span>中医-辉煌成就</span>
+</div> -->
+</div>
+
+<!-- 主题模块 -->
+<div class="main">
+    <div class="animate">
+        <!-- 浮动层 -->
+        <div class="float">
+
+
+            <div class="floating1">
+                <div id="roate1">
+                    <div class="roate-item">
+                        <p></p>
+                        <span></span>
+                    </div>
+                    <div class="roate-item">
+                        <p></p>
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+            <!-- 修改floating2 -->
+            <div class="floating2">
+                <div id="roate2">
+                    <div class="roate-item2">
+                        <p></p>
+                        <span></span>
+                    </div>
+                    <div class="roate-item2">
+                        <p></p>
+                        <span></span>
+                    </div>
+                    <div class="roate-item2 clickable" onclick="goToPage1()"> <!-- 添加点击事件 -->
+                        <p>法医学</p>
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                function goToPage1() {
+                    window.location.href = './three_4.html';
+                }
+            </script>
+
+            <style>
+                .clickable {
+                    cursor: pointer;
+                    /* 添加鼠标指针样式，表示可点击 */
+                    user-select: none;
+                    /* 防止文本被选中 */
+                }
+
+                .clickable:hover {
+                    background-color: rgba(255, 255, 255, 0.1);
+                    /* 添加悬停效果 */
+                }
+            </style>
+
+            <div class="floating3">
+                <div id="roate3">
+                    <div class="roate-item3">
+                        <p></p>
+                        <span></span>
+                    </div>
+                    <div class="roate-item3">
+                        <p></p>
+                        <span></span>
+                    </div>
+                    <div class="roate-item3 clickable" onclick="goToPage2()"> <!-- 添加点击事件 -->
+                        <p>中药学</p>
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                function goToPage2() {
+                    window.location.href = './picture2.html';
+                }
+            </script>
+
+            <style>
+                .clickable {
+                    cursor: pointer;
+                    user-select: none;
+                    /* 防止文本被选中 */
+                }
+
+                .clickable:hover {
+                    background-color: rgba(255, 255, 255, 0.1);
+                    /* 添加悬停效果 */
+                }
+            </style>
+
+            <!-- 修改floating4 -->
+            <div class="floating4">
+                <div id="roate4">
+                    <div class="roate-item4">
+                        <p></p>
+                        <span></span>
+                    </div>
+                    <div class="roate-item4">
+                        <p></p>
+                        <span></span>
+                    </div>
+                    <div class="roate-item4 clickable" onclick="goToPage3('internal')"> <!-- 添加点击事件 -->
+                        <p>内科学</p>
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+            <script>
+                function goToPage3() {
+                    window.location.href = './three_3.html';
+                }
+            </script>
+
+            <style>
+                .clickable {
+                    cursor: pointer;
+                    /* 添加鼠标指针样式，表示可点击 */
+                    user-select: none;
+                    /* 防止文本被选中 */
+                }
+
+                .clickable:hover {
+                    background-color: rgba(255, 255, 255, 0.1);
+                    /* 添加悬停效果 */
+                }
+            </style>
+
+            <div class="floating5">
+                <div id="roate5">
+                    <div class="roate-item5">
+                        <p></p>
+                        <span></span>
+                    </div>
+                    <div class="roate-item5 clickable" onclick="goToPage4('surgery')"> <!-- 添加点击事件 -->
+                        <p>医疗外科</p>
+                        <span></span>
+                    </div>
+                </div>
+            </div>
+            <script>
+                function goToPage4() {
+                    window.location.href = './three_2.html';
+                }
+            </script>
+
+
+            <style>
+                .clickable {
+                    cursor: pointer;
+                    /* 添加鼠标指针样式，表示可点击 */
+                    user-select: none;
+                    /* 防止文本被选中 */
+                }
+
+                .clickable:hover {
+                    background-color: rgba(255, 255, 255, 0.1);
+                    /* 添加悬停效果 */
+                }
+            </style>
+
+
+        </div>
+        <div class="sum">
+            <div class="data">
+                <!-- <a href="./three-1.html" class="qiu-link"> -->
+                <span>中医学各领域成就可视化大屏</span><br>
+                <span>中国医学之浪漫</span>
+                <!-- </a> -->
+            </div>
+            <div class="cicle1"></div>
+            <canvas id="canvas1"></canvas>
+            <canvas id="canvas2"></canvas>
+            <div class="data1">
+                <div class="qiu">
+                    <p></p>
+                </div>
+                <span></span>
+            </div>
+            <div class="data2">
+                <div class="qiu">
+                    <p></p>
+                </div>
+                <span></span>
+            </div>
+            <div class="data3">
+                <div class="qiu">
+                    <p></p>
+                </div>
+                <span></span>
+            </div>
+            <div class="data4">
+                <div class="qiu">
+                    <p></p>
+                </div>
+                <span></span>
+            </div>
+
+        </div>
+    </div>
+    <div class="charts">
+        <div class="charts1">
+            <div class="charts-title">
+                <span>中医学经典著作传播分析</span>
+            </div>
+            <div class="charts-content1 content">
+                <div id="spread-chart" style="width: 100%; height: 260px;"></div>
+            </div>
+        </div>
+        <div class="charts2">
+            <div class="charts-title">
+                <span>中医学著作</span>
+            </div>
+            <div class="charts-content2 content">
+                <div class="scroll-container">
+                    <table>
+                        <thead>
+                        <tr>
+                            <td>作者</td>
+                            <td>著作</td>
+                            <td>领域</td>
+                            <td>完成情况</td>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>黄帝</td>
+                            <td>《黄帝内经》</td>
+                            <td>基础理论</td>
+                            <td>上古时期 </td>
+                        </tr>
+                        <tr>
+                            <td>张仲景</td>
+                            <td>《伤寒杂病论》</td>
+                            <td>临床医学</td>
+                            <td>东汉</td>
+                        </tr>
+                        <tr>
+                            <td>李时珍</td>
+                            <td>《本草纲目》</td>
+                            <td>药物学</td>
+                            <td>明朝</td>
+                        </tr>
+                        <tr>
+                            <td>孙思邈</td>
+                            <td>《方剂学》</td>
+                            <td>千金方</td>
+                            <td>唐朝</td>
+                        </tr>
+                        <tr>
+                            <td>王叔和</td>
+                            <td>《脉经》</td>
+                            <td>诊断学</td>
+                            <td>西晋</td>
+                        </tr>
+                        <tr>
+                            <td>扁鹊</td>
+                            <td>《难经》</td>
+                            <td>诊断理论</td>
+                            <td>战国时期</td>
+                        </tr>
+                        <tr>
+                            <td>皇甫谧</td>
+                            <td>《针灸甲乙经》</td>
+                            <td>针灸学</td>
+                            <td>西晋</td>
+                        </tr>
+                        <tr>
+                            <td>钱乙</td>
+                            <td>《小儿药证直诀》</td>
+                            <td>儿科医学</td>
+                            <td>北宋</td>
+                        </tr>
+                        <tr>
+                            <td>陈自明</td>
+                            <td>《妇人大全良方》</td>
+                            <td>妇产科</td>
+                            <td>南宋</td>
+                        </tr>
+                        <tr>
+                            <td>葛洪</td>
+                            <td>《肘后备急方》</td>
+                            <td>急诊医学</td>
+                            <td>东晋</td>
+                        </tr>
+                        <tr>
+                            <td>雷斅</td>
+                            <td>《雷公炮炙论》</td>
+                            <td>中药炮制</td>
+                            <td>南朝刘宋</td>
+                        </tr>
+                        <tr>
+                            <td>危亦林</td>
+                            <td>《世医得效方》</td>
+                            <td>骨伤科学</td>
+                            <td>元朝</td>
+                        </tr>
+                        <tr>
+                            <td>龚廷贤</td>
+                            <td>《万病回春》</td>
+                            <td>综合临床</td>
+                            <td>明朝</td>
+                        </tr>
+                        <tr>
+                            <td>傅山</td>
+                            <td>《傅青主女科》</td>
+                            <td>妇科医学</td>
+                            <td>清朝</td>
+                        </tr>
+                        <tr>
+                            <td>王清任</td>
+                            <td>《医林改错》</td>
+                            <td>解剖学</td>
+                            <td>清朝</td>
+                        </tr>
+                        <tr>
+                            <td>巢元方</td>
+                            <td>《诸病源候论》</td>
+                            <td>病因学</td>
+                            <td>隋朝</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+<script src="./js/jquery-1.11.0.min.js"></script>
+<script src="./js/echarts.min.js"></script>
+<script src="./js/main.js"></script>
+<script>
+    // 著作传播数据
+    const spreadData = {
+        categories: ['黄帝内经', '伤寒杂病论', '本草纲目', '千金方', '脉经', '温病条辨'],
+        data: [
+            { name: '传播国家', value: [45, 38, 67, 29, 22, 31] },
+            { name: '译本数量', value: [15, 12, 25, 8, 6, 10] }
+        ]
+    };
+
+    // 初始化图表
+    const chart = echarts.init(document.getElementById('spread-chart'));
+    chart.setOption({
+        tooltip: { trigger: 'axis' },
+        legend: {
+            data: ['传播国家', '译本数量'],
+            textStyle: { color: '#fff' }
+        },
+        xAxis: {
+            type: 'category',
+            data: spreadData.categories,
+            axisLabel: {
+                show: false,
+                color: '#fff'
+            }
+        },
+        yAxis: { axisLabel: { color: '#fff' } },
+        series: [
+            {
+                name: '传播国家',
+                type: 'bar',
+                data: spreadData.data[0].value,
+                itemStyle: { color: '#4bd8ba' }
+            },
+            {
+                name: '译本数量',
+                type: 'bar',
+                data: spreadData.data[1].value,
+                itemStyle: { color: '#dbbd73' }
+            }
+        ]
+    });
+</script>
+<script>
+    document.querySelector('.back-btn').addEventListener('click', () => {
+        new Audio('click-sound.mp3').play().catch(() => { });
+    });
+</script>
+<script>
+    // 增强版自动滚动控制
+    class TableScroller {
+        constructor(selector) {
+            this.container = document.querySelector(selector);
+            this.table = this.container.querySelector('table');
+            this.speed = 50; // 像素/秒
+            this.isPaused = false;
+            this.init();
+        }
+
+        init() {
+            // 复制内容实现无缝滚动
+            this.table.innerHTML += this.table.innerHTML;
+
+            // 动态计算高度
+            const rowHeight = this.table.rows[1].offsetHeight;
+            this.container.style.height = rowHeight * 5 + 'px'; // 显示5行
+
+            // 启动动画
+            this.animate();
+
+            // 事件监听
+            this.container.addEventListener('mouseenter', () => this.pause());
+            this.container.addEventListener('mouseleave', () => this.resume());
+        }
+
+        animate() {
+            let position = 0;
+            const animateFrame = () => {
+                if (!this.isPaused) {
+                    position = (position + this.speed / 60) % (this.table.offsetHeight / 2);
+                    this.table.style.transform = `translateY(-${position}px)`;
+                }
+                requestAnimationFrame(animateFrame);
+            };
+            animateFrame();
+        }
+
+        pause() { this.isPaused = true; }
+        resume() { this.isPaused = false; }
+    }
+
+    // 初始化滚动实例
+    new TableScroller('.scroll-container');
+</script>
+<style>
+    /* 优化后的按钮样式 */
+    .back-btn {
+        position: absolute;
+        right: 20px;
+        top: 15px;
+        /* 定位到最上方 */
+        padding: 6px 20px 6px 15px;
+        background: linear-gradient(90deg, #4bd8ba33, #4bd8ba11);
+        border: 1px solid #4bd8ba;
+        border-radius: 18px;
+        color: #4bd8ba;
+        font-family: 'Microsoft YaHei';
+        font-size: 14px;
+        cursor: pointer;
+        transition: all 0.3s;
+        backdrop-filter: blur(3px);
+        z-index: 999;
+        /* 确保在最上层 */
+        display: flex;
+        align-items: center;
+    }
+
+    .back-btn span {
+        margin-right: 8px;
+        font-size: 16px;
+    }
+
+    .back-btn:hover {
+        background: linear-gradient(90deg, #4bd8ba, #4bd8ba66);
+        box-shadow: 0 0 15px #4bd8ba;
+        transform: translateY(-1px);
+    }
+
+    /* 保持标题居中 */
+    .title {
+        text-align: center;
+        width: 100%;
+    }
+
+    /* 新增滚动容器样式 */
+    .scroll-container {
+        height: 240px;
+        /* 根据实际高度调整 */
+        overflow: hidden;
+        position: relative;
+    }
+
+    /* 表格动画轨道 */
+    @keyframes scroll {
+        0% {
+            transform: translateY(0);
+        }
+
+        100% {
+            transform: translateY(calc(-100% + 240px));
+        }
+    }
+
+    /* 应用动画 */
+    table {
+        animation: scroll 40s linear infinite;
+        transform: translateZ(0);
+        /* 启用硬件加速 */
+    }
+
+    /* 悬停暂停 */
+    .scroll-container:hover table {
+        animation-play-state: paused;
+    }
+
+    .charts {
+        margin-top: 5px;
+        /* 整体下移 */
+        display: grid;
+        grid-template-rows: auto 1fr;
+        /* 自适应高度 */
+        gap: 5px;
+        /* 增加间距 */
+    }
+
+    /* 调整表格容器高度和位置 */
+    .charts-content2 {
+        height: calc(100vh - 300px);
+        /* 动态高度 */
+        margin-top: 5px;
+        /* 下移距离 */
+        padding-bottom: 15px;
+        /* 底部留白 */
+    }
+
+    /* 优化滚动容器 */
+    .scroll-container {
+        height: 80% !important;
+        /* 继承父级高度 */
+        transform: translateY(20px);
+        /* 微调位置 */
+    }
+
+    /* 添加渐变遮罩增强视觉效果 */
+    .scroll-container::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 40px;
+        background: linear-gradient(to bottom,
+        rgba(26, 42, 59, 0) 0%,
+        rgba(26, 42, 59, 0.95) 100%);
+        z-index: 1;
+    }
+
+    /* 球体链接样式（与现有点击元素保持一致） */
+    .qiu-link {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        color: #4bd8ba;
+        /* 与主题色一致 */
+        text-decoration: none;
+        /* 去掉下划线 */
+        cursor: pointer;
+        /* 鼠标手势 */
+        user-select: none;
+        /* 禁止文本选中 */
+        pointer-events: auto;
+    }
+
+    .qiu-link:hover {
+        color: #ffffff;
+        /* 悬停文字变色 */
+        text-shadow: 0 0 10px #4bd8ba;
+        /* 悬停阴影效果 */
+    }
+</style>
+
+</html>

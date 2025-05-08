@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+    <title>中国古代内科学可视化大屏</title>
+    <style>
+        .main {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr 1fr;
+            /* 列数和宽度 */
+            grid-template-rows: auto;
+            /* 行高 */
+            grid-column-gap: 5px;
+            /* 列间距 */
+            grid-row-gap: 10px;
+            /* 行间距 */
+            align-items: center;
+        }
+
+        .box:nth-child(1) {
+            grid-column-start: 1;
+            grid-column-end: 2;
+            grid-row-start: 1;
+            grid-row-end: 2;
+            height: 50vh;
+            border-color: #8FCBB4;
+            border-width: 3px;
+            border-style: inset;
+            border-radius: 8px;
+        }
+
+        .box:nth-child(2) {
+            grid-column-start: 1;
+            grid-column-end: 2;
+            grid-row-start: 2;
+            grid-row-end: 3;
+            height: 50vh;
+            border-color: #8FCBB4;
+            border-width: 3px;
+            border-style: inset;
+            border-radius: 8px;
+        }
+
+        .box:nth-child(3) {
+            grid-column-start: 2;
+            grid-column-end: 3;
+            grid-row-start: 1;
+            grid-row-end: 3;
+            height: 100vh;
+            border: 0;
+        }
+
+        .box:nth-child(4) {
+            grid-column-start: 3;
+            grid-column-end: 4;
+            grid-row-start: 1;
+            grid-row-end: 2;
+            height: 50vh;
+            border-color: #8FCBB4;
+            border-width: 3px;
+            border-style: inset;
+            border-radius: 8px;
+        }
+
+        .box:nth-child(5) {
+            grid-column-start: 3;
+            grid-column-end: 4;
+            grid-row-start: 2;
+            grid-row-end: 3;
+            height: 50vh;
+            border-color: #8FCBB4;
+            border-width: 3px;
+            border-style: inset;
+            border-radius: 8px;
+        }
+
+        .box {
+            padding: 10px;
+            border: 1px solid #ccc;
+            /* 可选边框 */
+            box-sizing: border-box;
+        }
+
+        #flow {
+            width: 200px;
+            /* 根据需要调整宽度 */
+            height: 300px;
+            /* 根据需要调整高度 */
+            overflow: hidden;
+            position: relative;
+            border: 1px solid #ccc;
+            border-color: #8FCBB4;
+            border-width: 3px;
+            border-style: inset;
+            border-radius: 8px;
+        }
+
+        #news-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: auto;
+            animation: scroll 25s linear infinite;
+            /* 滚动动画 */
+        }
+
+        #news-list li {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        @keyframes scroll {
+            0% {
+                transform: translateY(0);
+            }
+
+            100% {
+                transform: translateY(-100%);
+            }
+        }
+
+        .news-title {
+            font-weight: bold;
+        }
+
+        .news-info {
+            color: #6c6e36;
+        }
+
+        #right2 {
+            background-image: url("three_2/herb_usage_wordcloud.png");
+            background-size: contain;
+            /* 保持图片完整比例 */
+            background-repeat: no-repeat;
+            background-position: center center;
+            /* 居中显示 */
+        }
+    </style>
+</head>
+
+<body background="three_2/index_bg.jpg"
+    style="width:100%;background-repeat:no-repeat;background-attachment:fixed;background-size:100% 100%;margin:0;padding:0;">
+    <div class="nav-buttons">
+        <a href="three.html" class="nav-button">网站首页</a>
+        <a href="picture2.html" class="nav-button active">中药医学</a>
+        <a href="three_2.html" class="nav-button">医疗外科学</a>
+        <a href="three_4.html" class="nav-button">法医学</a>
+    </div>
+    <style>
+        /* 修改后的绿色系按钮样式 */
+        .nav-buttons {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 999;
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #4CAF50, #45A049);
+            /* 浅绿-中绿渐变 */
+            color: #fff !important;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+            /* 绿色阴影 */
+            transition: all 0.3s ease;
+            border: 2px solid #4CAF50;
+        }
+
+        .nav-button:hover {
+            background: linear-gradient(135deg, #45A049, #388E3C);
+            /* 中绿-深绿渐变 */
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(56, 142, 60, 0.4);
+        }
+
+        .nav-button:active {
+            background: linear-gradient(135deg, #2E7D32, #1B5E20);
+            /* 墨绿-深绿渐变 */
+            transform: translateY(1px);
+            box-shadow: 0 2px 10px rgba(27, 94, 32, 0.3);
+        }
+
+        /* 激活状态样式 */
+        .nav-button.active {
+            background: linear-gradient(135deg, #2E7D32, #1B5E20) !important;
+            cursor: default !important;
+            transform: translateY(1px);
+            box-shadow: 0 2px 10px rgba(27, 94, 32, 0.3) !important;
+            border-color: #2E7D32 !important;
+        }
+
+        .nav-button.active:hover {
+            background: linear-gradient(135deg, #2E7D32, #1B5E20) !important;
+            transform: translateY(1px) !important;
+        }
+    </style>
+    <div class="header" id='header'>
+        <div class="header-title" id="title" style="text-align: center;">
+            <h1>中国古代内科学可视化大屏</h1>
+        </div>
+    </div>
+    <div class="main" id='main'>
+        <div class='box' id="left1"></div>
+        <div class='box' id="left2"></div>
+        <div class='box' id="center">
+            <div id="map" style="width: 100%;height: 60%;"></div>
+            <div style="height: 50px;font-display:inherit;display: inline;top:20px;">
+                <h3>典型方剂速览</h3>
+            </div>
+            <div id="flow" style="width: 100%;height: 30%;">
+                <ul id="news-list"> </ul>
+            </div>
+        </div>
+        <div class='box' id="right1"></div>
+        <div class='box' id="right2"></div>
+    </div>
+    <script src="js/echarts.min.js"></script>
+    <script src="js/china.js"></script>
+    <script src="js/herbs.js"></script>
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script src="js/flow-herbs.js"></script>
+
+</body>
+
+</html>

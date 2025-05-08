@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>中医食养桑基图</title>
+  <script src="echarts.min.js"></script>
+  <style>
+    /* 返回按钮样式 */
+    .back-btn {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 50px;
+      height: 50px;
+      background: rgba(212, 175, 55, 0.8);
+      /* 与页面主色调一致 */
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+      color: white;
+      font-size: 18px;
+      font-family: "楷体", "KaiTi", sans-serif;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      opacity: 0.9;
+    }
+
+    .back-btn:hover {
+      background: rgba(212, 175, 55, 1);
+      transform: scale(1.05);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+      opacity: 1;
+    }
+
+    .back-btn::before {
+      content: "←";
+      font-size: 14px;
+      margin-right: 8px;
+    }
+
+    /* .back-btn span {
+            white-space: nowrap;
+            transform: scale(0);
+            初始隐藏文字
+            transition: transform 0.3s ease;
+        } */
+
+    .back-btn:hover span {
+      transform: scale(1);
+      /* 悬停显示文字 */
+    }
+
+
+    #chart-container {
+      width: 100%;
+      height: 750px;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Microsoft YaHei', Arial, sans-serif;
+      background:
+        linear-gradient(rgba(245, 239, 224, 0.87),
+          rgba(245, 239, 224, 0.87)),
+        url('./img/04.png');
+      background-size: 50% auto;       /* 放大背景图片 */
+      background-position: center -150%; /* 上移背景图片 */
+      /* line-height: 1.8; */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="chart-container"></div>
+
+  <script>
+    // 等待 DOM 元素加载完成
+    document.addEventListener('DOMContentLoaded', function () {
+      // 获取图表容器
+      const chartContainer = document.getElementById('chart-container');
+
+      // 初始化 ECharts 实例
+      const myChart = echarts.init(chartContainer);
+
+      // 指定图表的配置项和数据
+      const option = {
+        title: {
+          text:'诗意医韵:中医五行养生食谱',
+          // subtext: '中医食养',
+          left: 'center',
+          textStyle: {
+            fontSize: 22,
+            fontWeight: 'bold',
+            color: '#333'
+          },
+        },
+        series: [
+          {
+            type: 'sankey',
+            left: 50.0,
+            top: 20.0,
+            right: 150.0,
+            bottom: 25.0,
+            data: [
+              {
+                name: '红豆',
+                itemStyle: {
+                  color: '#f18bbf',
+                  borderColor: '#f18bbf'
+                }
+              },
+              {
+                name: '红薯',
+                itemStyle: {
+                  color: '#0078D7',
+                  borderColor: '#0078D7'
+                }
+              },
+              {
+                name: '枸杞',
+                itemStyle: {
+                  color: '#3891A7',
+                  borderColor: '#3891A7'
+                }
+              },
+              {
+                name: '草莓',
+                itemStyle: {
+                  color: '#0037DA',
+                  borderColor: '#0037DA'
+                }
+              },
+              {
+                name: '番茄',
+                itemStyle: {
+                  color: '#C0BEAF',
+                  borderColor: '#C0BEAF'
+                }
+              },
+              {
+                name: '辣椒',
+                itemStyle: {
+                  color: '#EA005E',
+                  borderColor: '#EA005E'
+                }
+              },
+              {
+                name: '苹果',
+                itemStyle: {
+                  color: '#D13438',
+                  borderColor: '#D13438'
+                }
+              },
+              {
+                name: '樱桃',
+                itemStyle: {
+                  color: '#567C73',
+                  borderColor: '#567C73'
+                }
+              },
+              {
+                name: '红枣',
+                itemStyle: {
+                  color: '#9ed566',
+                  borderColor: '#9ed566'
+                }
+              },
+              {
+                name: '石榴',
+                itemStyle: {
+                  color: '#2BCC7F',
+                  borderColor: '#2BCC7F'
+                }
+              },
+              {
+                name: '覆盆子',
+                itemStyle: {
+                  color: '#809B48',
+                  borderColor: '#809B48'
+                }
+              },
+              {
+                name: '红高粱',
+                itemStyle: {
+                  color: '#9B2D1F',
+                  borderColor: '#9B2D1F'
+                }
+              },
+              {
+                name: '甜菜根',
+                itemStyle: {
+                  color: '#604878',
+                  borderColor: '#604878'
+                }
+              },
+              {
+                name: '心',
+                itemStyle: {
+                  color: 'rgba(238,99,99,255)',
+                  borderColor: 'rgba(238,99,99,255)'
+                }
+              },
+              {
+                name: '青菜',
+                itemStyle: {
+                  color: '#A5644E',
+                  borderColor: '#A5644E'
+                }
+              },
+              {
+                name: '菠菜',
+                itemStyle: {
+                  color: '#2D3F3A',
+                  borderColor: '#2D3F3A'
+                }
+              },
+              {
+                name: '芥蓝',
+                itemStyle: {
+                  color: '#761721',
+                  borderColor: '#761721'
+                }
+              },
+              {
+                name: '毛豆',
+                itemStyle: {
+                  color: '#B1BADD',
+                  borderColor: '#B1BADD'
+                }
+              },
+              {
+                name: '青椒',
+                itemStyle: {
+                  color: '#B0CCB0',
+                  borderColor: '#B0CCB0'
+                }
+              },
+              {
+                name: '西兰花',
+                itemStyle: {
+                  color: '#8164A3',
+                  borderColor: '#8164A3'
+                }
+              },
+              {
+                name: '四季豆',
+                itemStyle: {
+                  color: '#8E562E',
+                  borderColor: '#8E562E'
+                }
+              },
+              {
+                name: '空心菜',
+                itemStyle: {
+                  color: '#C1504D',
+                  borderColor: '#C1504D'
+                }
+              },
+              {
+                name: '苦瓜',
+                itemStyle: {
+                  color: '#CCAF0A',
+                  borderColor: '#CCAF0A'
+                }
+              },
+              {
+                name: '绿苹果',
+                itemStyle: {
+                  color: '#956251',
+                  borderColor: '#956251'
+                }
+              },
+              {
+                name: '猕猴桃',
+                itemStyle: {
+                  color: '#C17529',
+                  borderColor: '#C17529'
+                }
+              },
+              {
+                name: '鳄梨',
+                itemStyle: {
+                  color: '#CEC597',
+                  borderColor: '#CEC597'
+                }
+              },
+              {
+                name: '青提',
+                itemStyle: {
+                  color: '#9F2936',
+                  borderColor: '#9F2936'
+                }
+              },
+              {
+                name: '青瓜',
+                itemStyle: {
+                  color: '#32CD32',
+                  borderColor: '#32CD32'
+                }
+              },
+              {
+                name: '绿豆',
+                itemStyle: {
+                  color: '#ac7430',
+                  borderColor: '#ac7430'
+                }
+              },
+              {
+                name: '薄荷',
+                itemStyle: {
+                  color: '#00BCF2',
+                  borderColor: '#00BCF2'
+                }
+              },
+              {
+                name: '脾',
+                itemStyle: {
+                  color: 'rgba(173,255,47,255)',
+                  borderColor: 'rgba(173,255,47,255)'
+                }
+              },
+              {
+                name: '南瓜',
+                itemStyle: {
+                  color: '#CD7B38',
+                  borderColor: '#CD7B38'
+                }
+              },
+              {
+                name: '黄瓜',
+                itemStyle: {
+                  color: '#424242',
+                  borderColor: '#424242'
+                }
+              },
+              {
+                name: '玉米',
+                itemStyle: {
+                  color: '#f63185',
+                  borderColor: '#f63185'
+                }
+              },
+              {
+                name: '黄椒',
+                itemStyle: {
+                  color: '#9CBC59',
+                  borderColor: '#9CBC59'
+                }
+              },
+              {
+                name: '胡萝卜',
+                itemStyle: {
+                  color: '#4F4BD9',
+                  borderColor: '#4F4BD9'
+                }
+              },
+              {
+                name: '姜',
+                itemStyle: {
+                  color: '#3EC562',
+                  borderColor: '#3EC562'
+                }
+              },
+              {
+                name: '柠檬',
+                itemStyle: {
+                  color: '#F06F2E',
+                  borderColor: '#F06F2E'
+                }
+              },
+              {
+                name: '香蕉',
+                itemStyle: {
+                  color: '#C3986D',
+                  borderColor: '#C3986D'
+                }
+              },
+              {
+                name: '黄桃',
+                itemStyle: {
+                  color: '#4D291C',
+                  borderColor: '#4D291C'
+                }
+              },
+              {
+                name: '菠萝',
+                itemStyle: {
+                  color: '#009c7a',
+                  borderColor: '#009c7a'
+                }
+              },
+              {
+                name: '芒果',
+                itemStyle: {
+                  color: '#986F0B',
+                  borderColor: '#986F0B'
+                }
+              },
+              {
+                name: '黄豆',
+                itemStyle: {
+                  color: '#3C8EA4',
+                  borderColor: '#3C8EA4'
+                }
+              },
+              {
+                name: '黄豆芽',
+                itemStyle: {
+                  color: '#4F82BE',
+                  borderColor: '#4F82BE'
+                }
+              },
+              {
+                name: '肝',
+                itemStyle: {
+                  color: 'rgba(255,193,37)',
+                  borderColor: 'rgba(255,193,37)'
+                }
+              },
+              {
+                name: '肺',
+                itemStyle: {
+                  color: 'rgba(255,248,220)',
+                  borderColor: 'rgba(255,248,220)'
+                }
+              },
+              {
+                name: '小米',
+                itemStyle: {
+                  color: '#D38017',
+                  borderColor: '#D38017'
+                }
+              },
+              {
+                name: '白菜',
+                itemStyle: {
+                  color: '#A8CDD7',
+                  borderColor: '#A8CDD7'
+                }
+              },
+              {
+                name: '大白菜',
+                itemStyle: {
+                  color: '#7A072D',
+                  borderColor: '#7A072D'
+                }
+              },
+              {
+                name: '莲藕',
+                itemStyle: {
+                  color: '#859599',
+                  borderColor: '#859599'
+                }
+              },
+              {
+                name: '白萝卜',
+                itemStyle: {
+                  color: '#84AA33',
+                  borderColor: '#84AA33'
+                }
+              },
+              {
+                name: '蒜',
+                itemStyle: {
+                  color: '#ff8b67',
+                  borderColor: '#ff8b67'
+                }
+              },
+              {
+                name: '洋葱',
+                itemStyle: {
+                  color: 'rgba(106,82,134,255)',
+                  borderColor: 'rgba(106,82,134,255)'
+                }
+              },
+              {
+                name: '白木耳',
+                itemStyle: {
+                  color: '#1B587C',
+                  borderColor: '#1B587C'
+                }
+              },
+              {
+                name: '梨',
+                itemStyle: {
+                  color: '#A19574',
+                  borderColor: '#A19574'
+                }
+              },
+              {
+                name: '香蕉（去皮）',
+                itemStyle: {
+                  color: '#918485',
+                  borderColor: '#918485'
+                }
+              },
+              {
+                name: '白桃',
+                itemStyle: {
+                  color: '#FFA98C',
+                  borderColor: '#FFA98C'
+                }
+              },
+              {
+                name: '百合',
+                itemStyle: {
+                  color: '#B0E3C0',
+                  borderColor: '#B0E3C0'
+                }
+              },
+              {
+                name: '大米',
+                itemStyle: {
+                  color: '#4BADC7',
+                  borderColor: '#4BADC7'
+                }
+              },
+              {
+                name: '白芸豆',
+                itemStyle: {
+                  color: '#BA144C',
+                  borderColor: '#BA144C'
+                }
+              },
+              {
+                name: '银耳',
+                itemStyle: {
+                  color: '#F0A22E',
+                  borderColor: '#F0A22E'
+                }
+              },
+              {
+                name: '肾',
+                itemStyle: {
+                  color: 'rgba(64,105,157,255)',
+                  borderColor: 'rgba(64,105,157,255)'
+                }
+              },
+              {
+                name: '水',
+                itemStyle: {
+                  color: '#1C1C1C',
+                  borderColor: '#1C1C1C'
+                }
+              },
+              {
+                name: '金',
+                itemStyle: {
+                  color: '#33FFA9',
+                  borderColor: '#33FFA9'
+                }
+              },
+              {
+                name: '土',
+                itemStyle: {
+                  color: '#DCFF33',
+                  borderColor: '#DCFF33'
+                }
+              },
+              {
+                name: '火',
+                itemStyle: {
+                  color: '#FF6E33',
+                  borderColor: '#FF6E33'
+                }
+              },
+              {
+                name: '木',
+                itemStyle: {
+                  color: '#83FF33',
+                  borderColor: '#83FF33'
+                }
+              },
+              {
+                name: '黑木耳',
+                itemStyle: {
+                  color: '#1C1C1C',
+                  borderColor: '#1C1C1C'
+                }
+              },
+              {
+                name: '紫甘蓝',
+                itemStyle: {
+                  color: '#A28E6A',
+                  borderColor: '#A28E6A'
+                }
+              },
+              {
+                name: '秋葵',
+                itemStyle: {
+                  color: '#9F413E',
+                  borderColor: '#9F413E'
+                }
+              },
+              {
+                name: '黑莓',
+                itemStyle: {
+                  color: '#40699D',
+                  borderColor: '#40699D'
+                }
+              },
+              {
+                name: '黑枣',
+                itemStyle: {
+                  color: '#886CE4',
+                  borderColor: '#886CE4'
+                }
+              },
+              {
+                name: '黑葡萄',
+                itemStyle: {
+                  color: '#964305',
+                  borderColor: '#964305'
+                }
+              },
+              {
+                name: '黑米',
+                itemStyle: {
+                  color: '#485FB5',
+                  borderColor: '#485FB5'
+                }
+              },
+              {
+                name: '黑豆',
+                itemStyle: {
+                  color: '#87a0c7',
+                  borderColor: '#87a0c7'
+                }
+              },
+              {
+                name: '海苔',
+                itemStyle: {
+                  color: '#FFE2C5',
+                  borderColor: '#FFE2C5'
+                }
+              },
+              {
+                name: '黑芝麻',
+                itemStyle: {
+                  color: '#40699D',
+                  borderColor: '#40699D'
+                }
+              },
+            ],
+            links: [
+              {
+                source: '火',
+                target: '红豆',
+                value: 357.8399963378906
+              },
+              {
+                source: '心',
+                target: '火',
+                value: 8940.5999908447266
+              },
+              {
+                source: '火',
+                target: '红薯',
+                value: 178.9199981689453
+              },
+              {
+                source: '火',
+                target: '枸杞',
+                value: 188.52999836206436
+              },
+              {
+                source: '火',
+                target: '草莓',
+                value: 2346.919983509928
+              },
+              {
+                source: '火',
+                target: '番茄',
+                value: 753.4000000059605
+              },
+              {
+                source: '火',
+                target: '辣椒',
+                value: 178.9199981689453
+              },
+              {
+                source: '火',
+                target: '苹果',
+                value: 999.159998036921
+              },
+              {
+                source: '火',
+                target: '樱桃',
+                value: 536.7599945068359
+              },
+              {
+                source: '火',
+                target: '红枣',
+                value: 1831.3799968883395
+              },
+              {
+                source: '火',
+                target: '石榴',
+                value: 1789.1999816894531
+              },
+              {
+                source: '火',
+                target: '覆盆子',
+                value: 1274.8199949413538
+              },
+              {
+                source: '火',
+                target: '红高粱',
+                value: 357.8399963378906
+              },
+              {
+                source: '火',
+                target: "甜菜根",
+                value: 178.9199981689453
+              },
+              {
+                source: '肝',
+                target: '木',
+                value: 8000.8399963378906
+              },
+              {
+                source: '木',
+                target: '青菜',
+                value: 178.9199981689453
+
+              },
+              {
+                source: '木',
+                target: '菠菜',
+                value: 1073.5199890136719
+              },
+              {
+                source: '木',
+                target: '芥蓝',
+                value: 549.8400026857853
+              },
+              {
+                source: '木',
+                target: '毛豆',
+                value: 1764.499989286065
+              },
+              {
+                source: '木',
+                target: '青椒',
+                value: 1528.580000281334
+              },
+              {
+                source: '木',
+                target: '西兰花',
+                value: 357.8399963378906
+              },
+              {
+                source: '木',
+                target: '四季豆',
+                value: 8619.309983983636
+              },
+              {
+                source: '木',
+                target: '空心菜',
+                value: 1565.109990529716
+              },
+              {
+                source: '木',
+                target: '苦瓜',
+                value: 2683.7999725341797
+              },
+              {
+                source: '木',
+                target: '绿苹果',
+                value: 178.9199981689453
+              },
+              {
+                source: '木',
+                target: '猕猴桃',
+                value: 357.8399963378906
+              },
+              {
+                source: '木',
+                target: '鳄梨',
+                value: 178.9199981689453
+              },
+              {
+                source: '木',
+                target: '青提',
+                value: 1149.7999994903803
+              },
+              {
+                source: '木',
+                target: '青瓜',
+                value: 536.7599945068359
+              },
+              {
+                source: '木',
+                target: '绿豆',
+                value: 0.5899999737739563
+              },
+              {
+                source: '木',
+                target: '薄荷',
+                value: 357.8399963378906
+              },
+              {
+                source: '脾',
+                target: '土',
+                value: 8000.6899970173836
+              },
+              {
+                source: '土',
+                target: '南瓜',
+                value: 357.8399963378906
+              },
+              {
+                source: '土',
+                target: '黄瓜',
+                value: 0.5899999737739563
+              },
+              {
+                source: '土',
+                target: '玉米',
+                value: 1431.3599853515625
+              },
+              {
+                source: '土',
+                target: '黄椒',
+                value: 5369.929964579642
+              },
+              {
+                source: '土',
+                target: '胡萝卜',
+                value: 0.6399999856948853
+              },
+              {
+                source: '土',
+                target: '姜',
+                value: 857.1999968588352
+              },
+              {
+                source: '土',
+                target: '柠檬',
+                value: 1131.7099939212203
+              },
+              {
+                source: '土',
+                target: '香蕉',
+                value: 2504.8799743652344
+              },
+              {
+                source: '土',
+                target: '黄桃',
+                value: 2343.4599857851863
+              },
+              {
+                source: '土',
+                target: '菠萝',
+                value: 536.7599945068359
+              },
+              {
+                source: '土',
+                target: '芒果',
+                value: 216.83999809622765
+              },
+              {
+                source: '土',
+                target: '黄豆',
+                value: 1711.1399984136224
+              },
+              {
+                source: '土',
+                target: '黄豆芽',
+                value: 178.9199981689453
+              },
+              {
+                source: '肺',
+                target: '金',
+                value: 8000.28999888151884
+              },
+              {
+                source: '金',
+                target: '小米',
+                value: 10384.949975416064
+              },
+              {
+                source: '金',
+                target: '白菜',
+                value: 178.9199981689453
+              },
+              {
+                source: '金',
+                target: '大白菜',
+                value: 592.1700052022934
+              },
+              {
+                source: '金',
+                target: '莲藕',
+                value: 2906.2699892893434
+              },
+              {
+                source: '金',
+                target: '白萝卜',
+                value: 1448.2899911925197
+              },
+              {
+                source: '金',
+                target: '蒜',
+                value: 1120.4800013303757
+              },
+              {
+                source: '金',
+                target: '洋葱',
+                value: 612.1199932694435
+              },
+              {
+                source: '金',
+                target: '白木耳',
+                value: 178.9199981689453
+              },
+              {
+                source: '金',
+                target: '梨',
+                value: 6950.059956334531
+              },
+              {
+                source: '金',
+                target: '香蕉（去皮）',
+                value: 715.6799926757812
+              },
+              {
+                source: '金',
+                target: '白桃',
+                value: 0.2199999988079071
+              },
+              {
+                source: '金',
+                target: '百合',
+                value: 178.9199981689453
+              },
+              {
+                source: '金',
+                target: '大米',
+                value: 573.0499979257584
+              },
+              {
+                source: '金',
+                target: '白芸豆',
+                value: 8228.39999615401
+              },
+              {
+                source: '金',
+                target: '银耳',
+                value: 2310.4499812424183
+              },
+              {
+                source: '肾',
+                target: '水',
+                value: 8000
+              },
+              {
+                source: '水',
+                target: '黑木耳',
+                value: 178.9199981689453
+              },
+              {
+                source: '水',
+                target: '黑加仑',
+                value: 0.9200000166893005
+              },
+              {
+                source: '水',
+                target: '紫甘蓝',
+                value: 178.9199981689453
+              },
+              {
+                source: '水',
+                target: '秋葵',
+                value: 1610.2799835205078
+              },
+              {
+                source: '水',
+                target: '黑莓',
+                value: 357.8399963378906
+              },
+              {
+                source: '水',
+                target: '黑枣',
+                value: 178.9199981689453
+              },
+              {
+                source: '水',
+                target: '黑葡萄',
+                value: 2128.459992274642
+              },
+              {
+                source: '水',
+                target: '黑米',
+                value: 178.9199981689453
+              },
+              {
+                source: '水',
+                target: '黑豆',
+                value: 2128.459992274642
+              },
+              {
+                source: '水',
+                target: '海苔',
+                value: 715.6799926757812
+              },
+              {
+                source: '水',
+                target: '黑芝麻',
+                value: 178.9199981689453
+              }
+            ],
+            lineStyle: {
+              color: 'source',
+              curveness: 0.5
+            },
+            itemStyle: {
+              color: '#1f77b4',
+              borderColor: '#1f77b4'
+            },
+            label: {
+              color: 'rgba(0,0,0,0.7)',
+              fontFamily: 'Arial',
+              fontSize: 10
+            }
+          }
+        ],
+        tooltip: {
+          trigger: 'item'
+        }
+      };
+
+      // 使用刚指定的配置项和数据显示图表
+      myChart.setOption(option);
+
+      // 窗口大小变化时重新调整图表大小
+      function resizeHandler() {
+        myChart.resize();
+      }
+
+      // 添加窗口大小变化监听器
+      window.addEventListener('resize', resizeHandler);
+
+      // 当页面卸载时移除监听器并销毁图表实例
+      function cleanup() {
+        window.removeEventListener('resize', resizeHandler);
+        if (myChart) {
+          myChart.dispose();
+        }
+      }
+
+      // 监听页面卸载事件
+      window.addEventListener('beforeunload', cleanup);
+    });
+  </script>
+</body>
+<a href="javascript:history.back()" class="back-btn">
+  <span>返回</span>
+</a>
+
+</html>

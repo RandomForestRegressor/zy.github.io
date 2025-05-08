@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中药材展示</title>
+    <style>
+        :root {
+            --primary-color: #8b4513;
+            --secondary-color: #d4af37;
+            --text-color: #333;
+            --border-color: rgba(139, 69, 19, 0.3);
+            --hover-color: rgba(139, 69, 19, 0.1);
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            overflow: hidden;
+            font-family: '楷体', KaiTi, serif;
+            min-height: 100vh;
+            color: var(--text-color);
+        }
+
+        /* 标题样式 */
+        .boxTitle {
+            text-align: center;
+            padding: 20px 0;
+            font-size: 1.8em;
+            color: var(--primary-color);
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .boxTitle::after {
+            content: '';
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 2px;
+            background: var(--secondary-color);
+        }
+
+        /* 药材列表样式 */
+        .boxLis {
+            width: 85%;
+            margin: 20px auto 10px;
+            padding: 0;
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .boxLis li {
+            text-align: center;
+            padding: 6px 10px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+        }
+
+        .boxLis li:hover {
+            background: var(--hover-color);
+            transform: translateY(-2px);
+        }
+
+        .boxLis li.active {
+            background: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 内容展示区域 */
+        .content1 {
+            width: 90%;
+            margin: 0 auto;
+            padding: 10px;
+        }
+
+        .contList {
+            position: relative;
+            width: 100%;
+            height: 550px;
+            /* 增加图片展示区域高度 */
+            margin: 10px auto;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        /* 边框装饰 */
+        .contList::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            pointer-events: none;
+        }
+
+        /* 图片展示区域 */
+        .equipment_pic {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 50px;
+            box-sizing: border-box;
+        }
+
+        .equipment_pic img {
+            max-width: 100%;
+            max-height: 100%;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            position: absolute;
+        }
+
+        .equipment_pic img.show {
+            opacity: 1;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .boxLis {
+                width: 95%;
+                gap: 10px;
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .boxLis li {
+                padding: 6px 8px;
+                font-size: 0.9em;
+            }
+
+            .contList {
+                height: 400px;
+            }
+
+            .boxTitle {
+                font-size: 1.5em;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .boxLis {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .boxLis li {
+                padding: 4px 4px;
+                font-size: 0.8em;
+            }
+
+            .contList {
+                height: 350px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="boxTitle">中药材展示</div>
+    <ul class="boxLis">
+        <li class="left">人参</li>
+        <li class="left">茯苓</li>
+        <li class="left">鹿茸</li>
+        <li class="left">白芍</li>
+        <li class="left">麝香</li>
+        <li class="left">丹皮</li>
+        <li class="left">灵芝</li>
+        <li class="left">朱砂</li>
+    </ul>
+    <div class="content1">
+        <div class="contList">
+            <div class="equipment_pic">
+                <img class="first show" src="img_three1/03.png" alt="人参">
+                <img class="second" src="img_three1/04.png" alt="茯苓">
+                <img class="third" src="img_three1/05.png" alt="鹿茸">
+                <img class="fourth" src="img_three1/06.png" alt="白芍">
+                <img class="five" src="img_three1/013.png" alt="麝香">
+                <img class="six" src="img_three1/014.png" alt="丹皮">
+                <img class="serve" src="img_three1/015.png" alt="灵芝">
+                <img class="eight" src="img_three1/016.png" alt="朱砂">
+            </div>
+        </div>
+    </div>
+    <script src="js/jquery.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.boxLis').on('mouseenter', 'li', function () {
+                var that = $(this);
+                that.addClass('active').siblings().removeClass('active');
+
+                $('.equipment_pic img').removeClass('show');
+                $('.equipment_pic img').eq(that.index()).addClass('show');
+            });
+
+            // 添加触摸设备支持
+            $('.boxLis li').on('touchstart', function () {
+                var that = $(this);
+                that.addClass('active').siblings().removeClass('active');
+
+                $('.equipment_pic img').removeClass('show');
+                $('.equipment_pic img').eq(that.index()).addClass('show');
+            });
+        });
+    </script>
+</body>
+
+</html>

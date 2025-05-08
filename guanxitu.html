@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Graph Visualization</title>
+    <!-- 引入 ECharts 5 CDN -->
+    <script src="./echarts.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            background: #f0f2f5;
+            font-family: 'Arial', sans-serif;
+        }
+        #main {
+            width: 100%;
+            height: 100vh;
+            margin: 0 auto;
+        }
+        .chart-title {
+            position: absolute;
+            left: 20px;
+            bottom: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div id="main"></div>
+    <div class="chart-title">知识图谱关系网络</div>
+
+    <script>
+        // 内联的示例数据（可根据需要修改）
+        const graphData = {
+  "nodes": [
+    {
+      "id": "0",
+      "name": "甘",
+      "symbolSize": 20,
+      "x": -266.82776,
+      "y": 299.6904,
+      "value": 48,
+      "category": 0
+    },
+    {
+      "id": "1",
+      "name": "辛",
+      "symbolSize": 20,
+      "x": -418.08344,
+      "y": 446.8853,
+      "value": 48,
+      "category": 0
+    },
+    {
+      "id": "2",
+      "name": "酸",
+      "symbolSize": 20,
+      "x": -212.76357,
+      "y": 245.29176,
+      "value": 48,
+      "category": 0
+    },
+    {
+      "id": "3",
+      "name": "苦",
+      "symbolSize": 20,
+      "x": -242.82404,
+      "y": 235.26283,
+      "value": 48,
+      "category": 0
+    },
+    {
+      "id": "4",
+      "name": "咸",
+      "symbolSize": 20,
+      "x": -379.30386,
+      "y": 429.06424,
+      "value": 48,
+      "category": 0
+    },
+    {
+      "id": "5",
+      "name": "肝",
+      "symbolSize": 30,
+      "x": -417.26337,
+      "y": 406.03506,
+      "value": 48,
+      "category": 1
+    },
+    {
+      "id": "6",
+      "name": "胆",
+      "symbolSize": 30,
+      "x": -332.6012,
+      "y": 485.16974,
+      "value": 48,
+      "category": 1
+    },
+    {
+      "id": "7",
+      "name": "心胞",
+      "symbolSize": 30,
+      "x": -382.69568,
+      "y": 475.09113,
+      "value": 48,
+      "category": 1
+    },
+    {
+      "id": "8",
+      "name": "三焦",
+      "symbolSize": 30,
+      "x": -320.384,
+      "y": 387.17325,
+      "value": 48,
+      "category": 1
+    },
+    {
+      "id": "9",
+      "name": "胃",
+      "symbolSize": 30,
+      "x": -344.39832,
+      "y": 451.16772,
+      "value": 48,
+      "category": 1
+    },
+    {
+      "id": "10",
+      "name": "脾",
+      "symbolSize": 30,
+      "x": -89.34107,
+      "y": 234.56128,
+      "value": 48,
+      "category": 1
+    },
+    {
+      "id": "11",
+      "name": "膀胱",
+      "symbolSize": 36,
+      "x": -87.93029,
+      "y": -6.8120565,
+      "value": 48,
+      "category": 1
+    },
+    {
+      "id": "12",
+      "name": "肺",
+      "symbolSize": 30,
+      "x": -339.77908,
+      "y": -184.69139,
+      "value": 48,
+      "category": 1
+    },
+    {
+      "id": "13",
+      "name": "心",
+      "symbolSize": 30,
+      "x": -194.31313,
+      "y": 178.55301,
+      "value": 48,
+      "category": 1
+    },
+    {
+      "id": "14",
+      "name": "肾",
+      "symbolSize": 30,
+      "x": -158.05168,
+      "y": 201.99768,
+      "value": 48,
+      "category": 1
+    },
+    {
+      "id": "15",
+      "name": "大肠",
+      "symbolSize": 30,
+      "x": -127.701546,
+      "y": 242.55057,
+      "value": 48,
+      "category": 1
+    },
+    {
+      "id": "16",
+      "name": "小肠",
+      "symbolSize": 30,
+      "x": -385.2226,
+      "y": -393.5572,
+      "value": 48,
+      "category": 1
+    },
+    {
+      "id": "17",
+      "name": "柴胡",
+      "symbolSize": 15,
+      "x": -516.55884,
+      "y": -393.98975,
+      "value": 48,
+      "category": 2
+    },
+    {
+      "id": "18",
+      "name": "川芎",
+      "symbolSize": 15,
+      "x": -464.79382,
+      "y": -493.57944,
+      "value": 48,
+      "category": 2
+    },
+    {
+      "id": "19",
+      "name": "苍术",
+      "symbolSize": 15,
+      "x": -515.1624,
+      "y": -456.9891,
+      "value": 48,
+      "category": 2
+    },
+    {
+      "id": "20",
+      "name": "防风",
+      "symbolSize": 15,
+      "x": -408.12122,
+      "y": -464.5048,
+      "value": 48,
+      "category": 2
+    },
+    {
+      "id": "21",
+      "name": "广皮",
+      "symbolSize": 15,
+      "x": -456.44113,
+      "y": -425.13303,
+      "value": 48,
+      "category": 2
+    },
+    {
+      "id": "22",
+      "name": "甘草",
+      "symbolSize": 15,
+      "x": -459.1107,
+      "y": -362.5133,
+      "value": 48,
+      "category": 2
+    },
+    {
+      "id": "23",
+      "name": "独活",
+      "symbolSize": 15,
+      "x": -313.42786,
+      "y": -289.44803,
+      "value": 48,
+      "category": 2
+    },
+    {
+      "id": "24",
+      "name": "羌活",
+      "symbolSize": 15,
+      "x": 4.6313396,
+      "y": -273.8517,
+      "value": 48,
+      "category": 2
+    },
+    {
+      "id": "25",
+      "name": "细辛",
+      "symbolSize": 15,
+      "x": 82.80825,
+      "y": -203.1144,
+      "value": 48,
+      "category": 2
+    },
+    {
+      "id": "26",
+      "name": "人参",
+      "symbolSize": 15,
+      "x": 78.64646,
+      "y": -31.512747,
+      "value": 48,
+      "category": 2
+    },
+    {
+      "id": "27",
+      "name": "白术",
+      "symbolSize": 15,
+      "x": -81.46074,
+      "y": -204.20204,
+      "value": 48,
+      "category": 2
+    },
+    {
+      "id": "28",
+      "name": "茯苓",
+      "symbolSize": 15,
+      "x": -225.73984,
+      "y": 82.41631,
+      "value": 48,
+      "category": 2
+    },
+    {
+      "id": "29",
+      "name": "半夏",
+      "symbolSize": 15,
+      "x": -385.6842,
+      "y": -20.206686,
+      "value": 48,
+      "category": 2
+    },
+    {
+      "id": "30",
+      "name": "陈皮",
+      "symbolSize": 15,
+      "x": -403.92447,
+      "y": -197.69823,
+      "value": 48,
+      "category": 2
+    },
+    {
+      "id": "31",
+      "name": "厚朴",
+      "symbolSize": 15,
+      "x": -281.4253,
+      "y": -158.45137,
+      "value": 48,
+      "category": 2
+    },
+    {
+      "id": "32",
+      "name": "前胡",
+      "symbolSize": 15,
+      "x": -122.41348,
+      "y": 210.37503,
+      "value": 48,
+      "category": 2
+    },
+    {
+      "id": "33",
+      "name": "枳壳",
+      "symbolSize": 15,
+      "x": -234.6001,
+      "y": -113.15067,
+      "value": 48,
+      "category": 2
+    },
+    {
+      "id": "34",
+      "name": "桔梗",
+      "symbolSize": 15,
+      "x": -387.84915,
+      "y": 58.7059,
+      "value": 48,
+      "category": 2
+    },
+    {
+      "id": "35",
+      "name": "黄芩",
+      "symbolSize": 15,
+      "x": -338.2307,
+      "y": 87.48405,
+      "value": 48,
+      "category": 2
+    },
+    {
+      "id": "36",
+      "name": "黄连",
+      "symbolSize": 15,
+      "x": -453.26874,
+      "y": 58.94648,
+      "value": 48,
+      "category": 2
+    },
+    {
+      "id": "37",
+      "name": "白芷",
+      "symbolSize": 15,
+      "x": -386.44904,
+      "y": 140.05937,
+      "value": 48,
+      "category": 2
+    },
+    {
+      "id": "38",
+      "name": "寒",
+      "symbolSize": 25,
+      "x": -446.7876,
+      "y": 123.38005,
+      "value": 48,
+      "category": 3
+    },
+    {
+      "id": "39",
+      "name": "凉",
+      "symbolSize": 25,
+      "x": 336.49738,
+      "y": -269.55914,
+      "value": 48,
+      "category": 3
+    },
+    {
+      "id": "40",
+      "name": "平",
+      "symbolSize": 25,
+      "x": 29.187843,
+      "y": -460.13132,
+      "value": 48,
+      "category": 3
+    },
+    {
+      "id": "41",
+      "name": "温",
+      "symbolSize": 25,
+      "x": 238.36697,
+      "y": -210.00926,
+      "value": 48,
+      "category": 3
+    },
+    {
+      "id": "42",
+      "name": "热",
+      "symbolSize": 25,
+      "x": 189.69513,
+      "y": -346.50662,
+      "value": 48,
+      "category": 3
+    }
+  ],
+  "links": [
+    {
+      "source": "17",
+      "target": "3"
+     },
+      {
+      "source": "17",
+     "target": "1"
+      },
+      {
+     "source": "17",
+     "target": "38"
+      },
+      {
+     "source": "17",
+     "target": "5"
+     },
+      {
+     "source": "17",
+     "target": "6"
+     },
+     {
+       "source": "17",
+     "target": "7"
+     },
+     {
+      "source": "17",
+     "target": "8"
+     },
+      {
+     "source": "18",
+     "target": "1"
+     },
+     {
+      "source": "18",
+     "target": "41"
+      },
+     {
+      "source": "18",
+      "target": "5"
+     },
+     {
+     "source": "18",
+     "target": "6"
+      },
+      {
+      "source": "19",
+      "target": "1"
+      },
+       {
+      "source": "19",
+     "target": "3"
+     },
+     {
+     "source": "19",
+     "target": "41"
+      },
+     {
+     "source": "19",
+     "target": "10"
+      },
+      {
+     "source": "19",
+       "target": "9"
+     },
+      {
+       "source": "19",
+      "target": "6"
+     },
+      {
+     "source": "20",
+      "target": "1"
+      },
+       {
+     "source": "20",
+     "target": "0"
+      },
+       {
+      "source": "20",
+       "target": "41"
+      },
+       {
+     "source": "20",
+       "target": "10"
+      },
+      {
+      "source": "20",
+      "target": "6"
+      },
+      {
+     "source": "20",
+      "target": "11"
+      },
+       {
+     "source": "21",
+      "target": "3"
+      },
+       {
+     "source": "21",
+     "target": "1"
+     },
+      {
+      "source": "21",
+       "target": "41"
+      },
+      {
+      "source": "21",
+     "target": "12"
+       },
+      {
+      "source": "21",
+     "target": "10"
+      },
+      {
+      "source": "22",
+     "target": "0"
+       },
+      {
+     "source": "22",
+      "target": "40"
+     },
+      {
+       "source": "22",
+      "target": "13"
+     },
+      {
+       "source": "22",
+       "target": "12"
+     },
+      {
+        "source": "22",
+         "target": "10"
+       },
+       {
+       "source": "22",
+        "target": "9"
+       },
+        {
+        "source": "23",
+         "target": "1"
+        },
+        {
+        "source": "23",
+        "target": "3"
+         },
+        {
+        "source": "23",
+        "target": "41"
+       },
+        {
+         "source": "23",
+        "target": "14"
+       },
+         {
+         "source": "23",
+        "target": "11"
+         },
+       {
+        "source": "24",
+        "target": "1"
+        },
+         {
+         "source": "24",
+         "target": "3"
+        },
+        {
+        "source": "24",
+        "target": "41"
+        },
+        {
+        "source": "24",
+        "target": "11"
+       },
+       {
+       "source": "24",
+       "target": "14"
+        },
+        {
+        "source": "25",
+        "target": "1"
+         },
+        {
+       "source": "25",
+        "target": "41"
+      },
+       {
+      "source": "25",
+      "target": "13"
+      },
+       {
+     "source": "25",
+     "target": "12"
+      },
+     {
+      "source": "25",
+      "target": "14"
+       },
+       {
+       "source": "26",
+       "target": "0"
+       },
+       {
+      "source": "26",
+        "target": "3"
+        },
+        {
+        "source": "26",
+       "target": "41"
+      },
+      {
+       "source": "26",
+      "target": "10"
+      },
+      {
+      "source": "26",
+      "target": "12"
+       },
+       {
+        "source": "27",
+        "target": "3"
+        },
+        {
+        "source": "27",
+        "target": "0"
+        },
+        {
+        "source": "27",
+        "target": "41"
+        },
+        {
+        "source": "27",
+        "target": "10"
+        },
+        {
+        "source": "27",
+        "target": "9"
+        },
+        {
+        "source": "28",
+        "target": "0"
+        },
+        {
+        "source": "28",
+        "target": "40"
+        },
+        {
+        "source": "28",
+        "target": "13"
+        },
+        {
+        "source": "28",
+        "target": "11"
+        },
+        {
+        "source": "28",
+        "target": "14"
+        },
+        {
+        "source": "29",
+        "target": "1"
+        },
+        {
+        "source": "29",
+        "target": "41"
+        },
+        {
+        "source": "29",
+        "target": "10"
+        },
+        {
+        "source": "29",
+        "target": "9"
+        },
+        {
+        "source": "29",
+        "target": "12"
+        },
+        {
+        "source": "30",
+        "target": "3"
+        },
+        {
+        "source": "30",
+        "target": "1"
+        },
+        {
+        "source": "30",
+        "target": "41"
+        },
+        {
+        "source": "30",
+        "target": "12"
+        },
+        {
+        "source": "30",
+        "target": "10"
+        },
+        {
+        "source": "31",
+        "target": "3"
+        },
+        {
+        "source": "31",
+        "target": "1"
+        },
+        {
+        "source": "31",
+        "target": "41"
+        },
+        {
+        "source": "31",
+        "target": "10"
+        },
+        {
+        "source": "31",
+        "target": "12"
+        },
+        {
+        "source": "31",
+        "target": "15"
+        },
+        {
+        "source": "32",
+        "target": "3"
+        },
+        {
+        "source": "32",
+        "target": "1"
+        },
+        {
+        "source": "32",
+        "target": "38"
+        },
+        {
+        "source": "32",
+        "target": "12"
+        },
+        {
+        "source": "33",
+        "target": "3"
+        },
+        {
+        "source": "33",
+        "target": "1"
+        },
+        {
+        "source": "33",
+        "target": "2"
+        },
+        {
+        "source": "33",
+        "target": "38"
+        },
+        {
+        "source": "33",
+        "target": "10"
+        },
+        {
+        "source": "33",
+        "target": "9"
+        },
+        {
+        "source": "34",
+        "target": "3"
+        },
+        {
+        "source": "34",
+        "target": "1"
+        },
+        {
+        "source": "34",
+        "target": "40"
+        },
+        {
+        "source": "34",
+        "target": "12"
+        },
+        {
+        "source": "35",
+        "target": "3"
+        },
+        {
+        "source": "35",
+        "target": "38"
+        },
+        {
+        "source": "35",
+        "target": "12"
+        },
+        {
+        "source": "35",
+        "target": "6"
+        },
+        {
+        "source": "35",
+        "target": "10"
+        },
+        {
+        "source": "35",
+        "target": "15"
+        },
+        {
+        "source": "35",
+        "target": "16"
+        },
+        {
+        "source": "36",
+        "target": "3"
+        },
+        {
+        "source": "36",
+        "target": "38"
+        },
+        {
+        "source": "36",
+        "target": "13"
+        },
+        {
+        "source": "36",
+        "target": "10"
+        },
+        {
+        "source": "36",
+        "target": "9"
+        },
+        {
+        "source": "36",
+        "target": "5"
+        },
+        {
+        "source": "36",
+        "target": "6"
+        },
+        {
+        "source": "36",
+        "target": "15"
+        },
+        {
+        "source": "37",
+        "target": "1"
+        },
+        {
+        "source": "37",
+        "target": "41"
+        },
+        {
+          "source": "37",
+          "target": "12"
+          },
+          {
+          "source": "37",
+          "target": "10"
+          },
+          {
+          "source": "37",
+          "target": "9"
+          }
+    
+  ],
+  "categories": [
+    {
+      "name": "A"
+    },
+    {
+      "name": "B"
+    },
+    {
+      "name": "C"
+    },
+    {
+      "name": "D"
+    }
+  ]
+}
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const chartDom = document.getElementById('main');
+            const myChart = echarts.init(chartDom);
+
+            // 处理节点标签显示逻辑
+            graphData.nodes.forEach(node => {
+                node.label = {
+                    show: node.symbolSize > 30,
+                    fontSize: node.symbolSize / 3,
+                    color: '#333'
+                };
+            });
+
+            // 图表配置项
+            const option = {
+                title: {
+                    text: '知识图谱可视化',
+                    subtext: '数据关系展示',
+                    left: 'left',
+                    textStyle: {
+                        color: '#2c343c',
+                        fontSize: 18
+                    }
+                },
+                tooltip: {
+                    trigger: 'item',
+                    formatter: params => {
+                        if (params.dataType === 'node') {
+                            return `节点名称: ${params.data.name}<br>类别: ${graphData.categories[params.data.category].name}`;
+                        }
+                        return `关系: ${params.data.source} → ${params.data.target}`;
+                    }
+                },
+                legend: {
+                    data: graphData.categories.map(c => c.name),
+                    orient: 'vertical',
+                    right: 20,
+                    top: 20,
+                    textStyle: {
+                        color: '#666'
+                    }
+                },
+                animationDuration: 1500,
+                animationEasingUpdate: 'quinticInOut',
+                series: [{
+                    type: 'graph',
+                    layout: 'circular',
+                    circular: {
+                        rotateLabel: true
+                    },
+                    data: graphData.nodes,
+                    links: graphData.links,
+                    categories: graphData.categories,
+                    roam: true,
+                    focusNodeAdjacency: true,
+                    label: {
+                        position: 'right',
+                        formatter: '{b}',
+                        textStyle: {
+                            fontSize: 12
+                        }
+                    },
+                    lineStyle: {
+                        color: 'source',
+                        curveness: 0.3,
+                        width: 2
+                    },
+                    itemStyle: {
+                        color: params => {
+                            const colors = ['#5470c6', '#91cc75', '#fac858', '#ee6666'];
+                            return colors[params.data.category % colors.length];
+                        },
+                        borderWidth: 2,
+                        borderColor: '#fff'
+                    },
+                    emphasis: {
+                        label: {
+                            show: true,
+                            fontSize: 14
+                        },
+                        lineStyle: {
+                            width: 3
+                        }
+                    }
+                }]
+            };
+
+            // 自适应窗口大小
+            window.addEventListener('resize', () => myChart.resize());
+            myChart.setOption(option);
+        });
+    </script>
+</body>
+</html>

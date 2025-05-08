@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>常见疾病分类展示及药方</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@3"></script>
+    <script src="echarts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <style>
+        /* 返回按钮样式 */
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background: rgba(212, 175, 55, 0.8);
+            /* 与页面主色调一致 */
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            color: white;
+            font-size: 18px;
+            font-family: "楷体", "KaiTi", sans-serif;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            opacity: 0.9;
+        }
+
+        .back-btn:hover {
+            background: rgba(212, 175, 55, 1);
+            transform: scale(1.05);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            opacity: 1;
+        }
+
+        .back-btn::before {
+            content: "←";
+            font-size: 14px;
+            margin-right: 8px;
+        }
+
+        /* .back-btn span {
+            white-space: nowrap;
+            transform: scale(0);
+            初始隐藏文字
+            transition: transform 0.3s ease;
+        } */
+
+        .back-btn:hover span {
+            transform: scale(1);
+            /* 悬停显示文字 */
+        }
+
+
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            margin: 0;
+            padding: 0;
+            /* background-color: #f5f5f5; */
+            background:
+                linear-gradient(rgba(245, 239, 224, 0.9),
+                    rgba(245, 239, 224, 0.9)),
+                url('../img/011.png');
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: rgba(245, 239, 224, 0.3)
+        }
+
+        #chart-container {
+            width: 100%;
+            height: 800px;
+            /* background-color: rgba(0, 0, 0, 0.87); */
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.36);
+            margin-bottom: 20px;
+        }
+
+        #tip {
+            display: none;
+            width: 100%;
+            height: 500px;
+            /* background-color: white; */
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        #left {
+            width: 0.1%;
+            height: 100%;
+            float: left;
+            border: 1px solid #ddd;
+            background-color: rgba(245, 239, 224, 0.75)
+        }
+
+        #mid {
+            width: 96%;
+            height: 100%;
+            float: left;
+            /* border: 1px solid #ddd; */
+            padding: 20px;
+            overflow-y: auto;
+            background-color: rgba(245, 239, 224, 0.39)
+        }
+
+        #right {
+            width: 0.1%;
+            height: 100%;
+            float: left;
+            border: 1px solid #ddd;
+            background-color: rgba(245, 239, 224, 0.7)
+        }
+
+        #return {
+            display: none;
+            margin-bottom: 20px;
+        }
+
+        button {
+            background: none;
+            border: none;
+            outline: none;
+            cursor: pointer;
+        }
+
+        button img {
+            height: 40px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        h4 {
+            color: #333;
+            text-align: center;
+        }
+
+        .tree-node {
+            cursor: pointer;
+        }
+
+        .tree-node:hover {
+            color: #1890ff;
+        }
+
+        .tooltip {
+            position: absolute;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            z-index: 100;
+        }
+
+        .title {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        #mychart {
+            background-color: rgba(245, 239, 224, 0.66);
+            /* 黑色背景 */
+            height: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>常见疾病分类展示及药方</h1>
+        <div id="chart-container">
+            <div id="mychart" style="height: 100%;"></div>
+        </div>
+
+        <div id="tip">
+            <div id="left" style="background-color: #f9f9f900;"></div>
+            <div id="mid"></div>
+            <div id="right"></div>
+        </div>
+
+        <div id="return">
+            <button>
+                <img style="height: auto;width: auto;" src="./返回.png" alt="返回">
+            </button>
+        </div>
+    </div>
+
+    <script lang="ts">
+        const data = {
+            "name": "疾病",
+            "children": [{
+                "name": "感冒",
+                "children": [{
+                    "name": "风寒束表",
+                    "value": 108,
+                    tooltip: {
+                        formatter: '恶寒，发热，无汗，头痛身疼，鼻塞流清涕，喷嚏，舌苔薄白，脉浮紧或浮缓'
+                    }
+                }, {
+                    "name": "暑湿伤表",
+                    "value": 34,
+                    tooltip: {
+                        formatter: '身热，或热势不扬，微恶风，无汗或少汗，头昏胀重，鼻塞流涕，胸闷泛恶，舌苔黄腻，脉濡数。'
+                    }
+                }, {
+                    "name": "风热犯表",
+                    "value": 111,
+                    tooltip: {
+                        formatter: '发热较重，微恶风，头胀痛，鼻塞流黄涕，咽痛咽红，咳嗽，舌边尖红，苔白或黄，脉浮数'
+                    }
+                }, {
+                    "name": "气虚型",
+                    "value": 134,
+                    tooltip: {
+                        formatter: '恶寒发热，或热势不盛，但觉时时形寒恶风，自汗，头痛鼻塞，咳嗽痰白，语声低怯，气短，倦怠乏力，苔白，脉浮无力。'
+                    }
+                }, {
+                    "name": "阴虚型",
+                    "value": 132,
+                    tooltip: {
+                        formatter: '发热，微恶风寒，无汗或微汗，或寐中盗汗，头痛，心烦，口干咽燥，手足心热，干咳少痰，或痰中带血丝，舌质红，脉细数。'
+                    }
+                }]
+            }, {
+                "name": "头痛",
+                "children": [{
+                    "name": "太阳症",
+                    "value": 1107,
+                    tooltip: {
+                        formatter: '恶寒发热，头项巅脑发际作痛'
+                    }
+                }, {
+                    "name": "阳明症",
+                    "value": 1593,
+                    tooltip: {
+                        formatter: '咳哕烦心痞满，额前作痛'
+                    }
+                }, {
+                    "name": "少阳症",
+                    "value": 229,
+                    tooltip: {
+                        formatter: '时寒时热，鬓边作痛'
+                    }
+                }, {
+                    "name": "少阴症",
+                    "value": 397,
+                    tooltip: {
+                        formatter: '心疼烦闷头痛，痛连胲骨'
+                    }
+                }, {
+                    "name": "太阴症",
+                    "value": 226,
+                    tooltip: {
+                        formatter: '腰脊头顶痛'
+                    }
+                }, {
+                    "name": "厥阴症",
+                    "value": 209,
+                    tooltip: {
+                        formatter: '干呕吐涎沫，痛在巅顶'
+                    }
+                }, {
+                    "name": "气虚者",
+                    "value": 24,
+                    tooltip: {
+                        formatter: '遇劳即痛，痛连鱼尾'
+                    }
+                }, {
+                    "name": "血亏者",
+                    "value": 404,
+                    tooltip: {
+                        formatter: '五心烦热，时常牵引刺痛，此血虚痛也'
+                    }
+                }, {
+                    "name": "肝胆有火者",
+                    "value": 269,
+                    tooltip: {
+                        formatter: '恼怒即发，痛引胁下'
+                    }
+                }]
+            }, {
+                "name": "呕吐",
+                "children": [{
+                    "name": "风气呕吐",
+                    "value": 193,
+                    tooltip: {
+                        formatter: '偶遇风冷，即发呕吐，头额疼痛，面赤面热，风入阳明，胃家呕吐症也'
+                    }
+                }, {
+                    "name": "寒气呕吐",
+                    "value": 3061,
+                    tooltip: {
+                        formatter: '偶遇寒冷，顿发呕吐，胸前绵绵而来，身无内热，小便清白，大便通顺，此寒气呕吐之症也'
+                    }
+                }, {
+                    "name": "暑气呕吐",
+                    "value": 867,
+                    tooltip: {
+                        formatter: '暑热行令，头眩目暗，呕吐暴作，身热恶寒，烦渴引饮，齿干唇燥，腹中疼痛，小便赤色，或混浊涩短，此暑热呕吐之症也'
+                    }
+                }, {
+                    "name": "湿气呕吐",
+                    "value": 449,
+                    tooltip: {
+                        formatter: '胸前满闷，头重身重，面目浮肿，呕恶而吐，口不渴，吐多痰涎，此湿气呕吐之症也'
+                    }
+                }, {
+                    "name": "湿热呕吐",
+                    "value": 576,
+                    tooltip: {
+                        formatter: '内热烦躁，口臭身热，面目黄肿，满闷恶心，闻谷气即呕，此湿热呕吐之症也'
+                    }
+                }, {
+                    "name": "胃火呕吐",
+                    "value": 256,
+                    tooltip: {
+                        formatter: '食入即吐，其味或酸或苦，五心烦热，夜卧不宁，口中干渴，二便阻涩，此胃火呕吐之症也'
+                    }
+                }, {
+                    "name": "胃寒呕吐",
+                    "value": 525,
+                    tooltip: {
+                        formatter: '畏寒喜热，不思饮食，遇冷即呕，四肢清冷，二便清利，口不渴，唇不焦，食久不化，吐出不臭，此胃寒呕吐之症也'
+                    }
+                }, {
+                    "name": "痰饮呕吐",
+                    "value": 347,
+                    tooltip: {
+                        formatter: '呕而肠鸣，漉漉有声，眼黑眩晕，时时恶心，此痰饮呕吐之症也'
+                    }
+                }]
+            }, {
+                "name": "腹痛",
+                "children": [{
+                    "name": "风气腹痛",
+                    "value": 632,
+                    tooltip: {
+                        formatter: '风冷着腹，即患腹痛，或发寒热，腹中攻注，或腹中作响，大便作泻，此风气腹痛之症也'
+                    }
+                }, {
+                    "name": "寒气腹痛",
+                    "value": 416,
+                    tooltip: {
+                        formatter: '面黄唇白，手足多冷，恶寒不热，二便清利，腹中绵绵作痛，此寒气腹痛之症也'
+                    }
+                }, {
+                    "name": "暑湿腹痛",
+                    "value": 511,
+                    tooltip: {
+                        formatter: '热令当权，忽尔腹中作痛，肠中作响，痛泻交作，此暑湿霍乱之类也'
+                    }
+                }, {
+                    "name": "燥火腹痛",
+                    "value": 393,
+                    tooltip: {
+                        formatter: '满腹刺痛，攻注胁肋，口渴身热，烦躁不寐，小便黄赤，不吐不泻，此燥火腹痛之症也'
+                    }
+                }, {
+                    "name": "痧胀腹痛",
+                    "value": 492,
+                    tooltip: {
+                        formatter: '忽尔胸腹胀痛，手足厥冷，指甲带青，痛不可忍，不吐不泻，或吐或泻，按之痛甚，俗名绞肠痧，此即痧胀腹痛之症也'
+                    }
+                }]
+            }]
+        };
+
+        const showContentMid = (name) => {
+            let title = `<br><br><h4 style="text-align: center;">${name}所用药方详解</h4><br>`;
+            let one = "<p><strong>药方药材：</strong>";
+            let three = "<strong>药方功用：</strong>";
+            let two = "";
+            let four = "";
+
+            if (name === "风寒束表") {
+                two = "荆防败毒散加减。荆芥10g，防风10g，天花粉15g，羌活6g，独活6g，前胡10g，桔梗6g，甘草6g，川芎10g，柴胡10g。<br><br>加减：表寒重者，加麻黄6g，桂枝6g，以疏散风寒；鼻塞流涕重者，可加辛夷（包煎）6g，苍耳子6g以疏风通窍。<br><br>";
+                four = "为发表剂。具有疏风解表、败毒消肿，祛痰止咳之功效。主治外感风寒湿邪。症见外感风寒初起，恶寒发热，头疼身痛，胸闷咳嗽，痰多色白，苔白脉浮，及一切疮疡肿毒，肿痛发热，左手脉浮数者。</p>"
+            } else if (name === "暑湿伤表") {
+                two = "藿香正气散加减。广藿香10g，佩兰10g，紫苏叶10g，桔梗6g，大腹皮10g，白术10g，陈皮10g，茯苓15g。<br><br>加减：里湿偏重，加苍术10g，豆蔻（后下）3g以祛湿；小便短赤，加六一散（包煎）6g以清暑利湿。<br><br>";
+                four = "为祛湿剂，具有解表化湿，理气和中之功效。主治外感风寒，内伤湿滞证。恶寒发热，头痛，胸膈满闷，脘腹疼痛，恶心呕吐，肠鸣泄泻，舌苔白腻，以及山岚瘴疟等。</p>"
+            } else if (name === "风热犯表") {
+                two = "银翘散加减。金银花10g，连翘12g，荆芥8g，牛蒡子10g，薄荷（后下）6g，淡豆鼓6g，竹叶10g，桔梗6g，甘草6g。<br><br>加减：咳嗽较重，可加桑叶12g，杏仁8g以化痰止咳；里热较盛，咽喉红肿疼痛，可加板蓝根15g，黄芩10g以清热解毒。<br><br>";
+                four = "辛凉透表，清热解毒。用于风热感冒，发热头痛，口干咳嗽，咽喉疼痛，小便短赤。</p>"
+            } else if (name === "气虚型") {
+                two = "参苏饮加减。党参10g，茯苓10g，紫苏叶10g，葛根10g，前胡10g，桔梗10g，法半夏9g。<br><br>加减：表虚自汗明显，加黄芪10g以益气固表；恶风、肢体酸痛，加桂枝10g，白芍10g以调和营卫。<br><br>";
+                four = "为解表剂。具有益气解表，理气化痰之功效。主治气虚外感风寒，内有痰湿证。症见发热恶寒，无汗，鼻塞头痛，胸脘满闷，咳嗽痰白，气短懒言，倦怠无力，苔白，脉弱。</p>"
+            } else if (name === "阴虚型") {
+                two = "葳蕤汤加减。玉竹10g，白薇10g，葱白10g，淡豆鼓10g，桔梗10g，薄荷（后下）10g，炙甘草10g。<br><br>加减：心烦口渴较甚，加竹叶10g，天花粉10g以清热生津；咽干咳痰不爽，加牛蒡子10g，瓜蒌皮10g以化痰利咽；咳痰带血，加生地黄10g，鲜茅根10g以清热止血。<br><br>";
+                four = "具有养阴理虚之功效。主治病后多寐，身犹灼热，余邪末清，正气未复。</p>"
+            } else if (name === "太阳症") {
+                two = "选奇方：防风 羌活 黄芩 甘草。因于风，倍加荆芥、防风；有寒，去黄芩，加川芎、细辛；有暑，加石膏、香薷；有湿，加苍术、白芷；有燥，加知母、石膏；有火，加黄连、山栀<br><br>";
+                four = "出自《兰室秘藏》卷上。具有祛风清热止痛之功效。主治风热挟痰上壅，头痛眩晕，眉棱骨痛。</p>"
+            } else if (name === "阳明症") {
+                two = "出自《兰室秘藏》卷上。具有祛风清热止痛之功效。主治风热挟痰上壅，头痛眩晕，眉棱骨痛。<br><br>";
+                four = "出自《兰室秘藏》卷上。具有祛风清热止痛之功效。主治风热挟痰上壅，头痛眩晕，眉棱骨痛。</p>"
+            } else if (name === "少阳症") {
+                two = "歌名《感遇》、《望月怀远》等更为千古传颂之诗。有《曲江集》二十卷传世。被贬后风格转趋朴素遒劲。<br><br>";
+                four = "张九龄才思敏捷，文章高雅，诗意超逸，其《感遇》、《望月怀远》等更为千古传颂之诗。有《曲江集》二十卷传世。被贬后风格转趋朴素遒劲。</p>"
+            } else if (name === "少阴症") {
+                two = "王维以清新淡远，自然脱俗的风格，创造出一种“诗中有画，画中有诗”（《东坡题跋·书摩诘蓝田烟雨图》）“诗中有禅”的意境，在诗坛树起了一面旗帜。著有《王右丞集》《画学秘诀》，存诗约400首。<br><br>";
+                four = "王维以清新淡远，自然脱俗的风格，创造出一种“诗中有画，画中有诗”（《东坡题跋·书摩诘蓝田烟雨图》）“诗中有禅”的意境，在诗坛树起了一面旗帜。著有《王右丞集》《画学秘诀》，存诗约400首。</p>"
+            } else if (name === "太阴症") {
+                two = "盛唐时期形成的以王维、孟浩然为代表的诗歌流派，又称田园诗派，他善于发掘自然和生活之美，即景会心，写出一时真切的感受。<br><br>";
+                four = "盛唐时期形成的以王维、孟浩然为代表的诗歌流派，又称田园诗派，他善于发掘自然和生活之美，即景会心，写出一时真切的感受。</p>"
+            } else if (name === "厥阴症") {
+                two = "皇甫冉才华横溢，佳作颇多，留给后人的有《皇甫冉诗集》3卷、《全唐诗》收其诗2卷，补遗7首，共241首。<br><br>";
+                four = "皇甫冉才华横溢，佳作颇多，留给后人的有《皇甫冉诗集》3卷、《全唐诗》收其诗2卷，补遗7首，共241首。</p>"
+            } else if (name === "气虚者") {
+                two = "王昌龄存诗181首，体裁以五古、七绝为主，题材则主要为离别、边塞、宫怨。其中虽不无愤世嫉俗之词，而更多属于诗人的自我表现。<br><br>";
+                four = "王昌龄存诗181首，体裁以五古、七绝为主，题材则主要为离别、边塞、宫怨。其中虽不无愤世嫉俗之词，而更多属于诗人的自我表现。</p>"
+            } else if (name === "血亏者") {
+                two = "贺知章诗歌以绝句见长，除祭神乐章、应制诗外，其写景、抒怀之作风格独特，从容不迫，淡而有味。贺知章诗歌今存共十九题二十首，包括断句一则。其中《咏柳》《回乡偶书》等脍炙人口，千古传诵。<br><br>";
+                four = "贺知章诗歌以绝句见长，除祭神乐章、应制诗外，其写景、抒怀之作风格独特，从容不迫，淡而有味。贺知章诗歌今存共十九题二十首，包括断句一则。其中《咏柳》《回乡偶书》等脍炙人口，千古传诵。</p>"
+            } else if (name === "肝胆有火者") {
+                two = "岑参现存诗403首，文有《感旧赋》一篇、《招北客文》一篇和墓铭两篇（即《果毅张先集墓铭》和《唐博陵郡安喜县令岑府君墓铭》。<br><br>";
+                four = "岑参现存诗403首，文有《感旧赋》一篇、《招北客文》一篇和墓铭两篇（即《果毅张先集墓铭》和《唐博陵郡安喜县令岑府君墓铭》。</p>"
+            } else if (name === "风气呕吐") {
+                two = "高适诗题材广泛，内容丰富，现实性较强。高适的诗对边塞诗派的有着重要的作用。写边塞，苍茫而不凄凉，皆脱前人窠臼，开一代诗风，其诗又以厚重深沉著称，擅长古风是边塞诗派发展进程中的一个重要里程碑。边塞诗《燕歌行》《蓟门行五首》《塞上》《塞下曲》《蓟中作》《九曲词三首》等。<br><br>";
+                four = "高适诗题材广泛，内容丰富，现实性较强。高适的诗对边塞诗派的有着重要的作用。写边塞，苍茫而不凄凉，皆脱前人窠臼，开一代诗风，其诗又以厚重深沉著称，擅长古风是边塞诗派发展进程中的一个重要里程碑。边塞诗《燕歌行》《蓟门行五首》《塞上》《塞下曲》《蓟中作》《九曲词三首》等。</p>"
+            } else if (name === "寒气呕吐") {
+                two = "柳宗元一生留诗文作品达600余篇，其文的成就大于诗。骈文有近百篇，散文论说性强，笔锋犀利，讽刺辛辣。游记写景状物，多所寄托，有《河东先生集》，代表作有《溪居》《江雪》《渔翁》。<br><br>";
+                four = "柳宗元一生留诗文作品达600余篇，其文的成就大于诗。骈文有近百篇，散文论说性强，笔锋犀利，讽刺辛辣。游记写景状物，多所寄托，有《河东先生集》，代表作有《溪居》《江雪》《渔翁》。</p>"
+            } else if (name === "暑气呕吐") {
+                two = "白居易的诗歌题材广泛，形式多样，语言平易通俗，有“诗魔”和“诗王”之称。官至太子少傅、刑部尚书，封冯翊县侯。公元846年，白居易在洛阳逝世，葬于香山。有《白氏长庆集》传世，代表诗作有《长恨歌》《卖炭翁》《琵琶行》等。<br><br>";
+                four = "白居易的诗歌题材广泛，形式多样，语言平易通俗，有“诗魔”和“诗王”之称。官至太子少傅、刑部尚书，封冯翊县侯。公元846年，白居易在洛阳逝世，葬于香山。有《白氏长庆集》传世，代表诗作有《长恨歌》《卖炭翁》《琵琶行》等。</p>"
+            } else if (name === "湿气呕吐") {
+                two = "刘禹锡诗文俱佳，涉猎题材广泛，与柳宗元并称“刘柳”，与韦应物、白居易合称“三杰”，并与白居易合称“刘白”。<br><br>";
+                four = "给后世留下《陋室铭》《竹枝词》《杨柳枝词》《乌衣巷》等名篇。刘禹锡的哲学著作《天论》三篇，论述天的物质性，分析“天命论”产生的根源，具有唯物主义思想。著有《刘梦得文集》《刘宾客集》。</p>"
+            } else if (name === "湿热呕吐") {
+                two = "韩愈的作品非常多，现存诗文700余篇，其中散文近400篇。 其赋、诗、论、说、传、记、颂、赞、书、序、哀辞、祭文、碑志、状、表、杂文等各种体裁的作品，均有卓越的成就。门人李汉曾编其遗文为《韩愈集》40卷，今有《韩昌黎集》传世。<br><br>";
+                four = "韩愈的作品非常多，现存诗文700余篇，其中散文近400篇。 其赋、诗、论、说、传、记、颂、赞、书、序、哀辞、祭文、碑志、状、表、杂文等各种体裁的作品，均有卓越的成就。门人李汉曾编其遗文为《韩愈集》40卷，今有《韩昌梨集》传世。</p>"
+            } else if (name === "胃火呕吐") {
+                two = "韦应物的作品今传有10卷本《韦江州集》、两卷本《韦苏州诗集》、10卷本《韦苏州集》。《全唐诗》共收韦应物诗568首，另《全唐文》卷三七五仅收韦应物撰《冰赋》一篇。此外，韦应物还撰有《故夫人河南元氏墓志铭》一篇。<br><br>";
+                four = "韦应物的作品今传有10卷本《韦江州集》、两卷本《韦苏州诗集》、10卷本《韦苏州集》。《全唐诗》共收韦应物诗568首，另《全唐文》卷三七五仅收韦应物撰《冰赋》一篇。此外，韦应物还撰有《故夫人河南元氏墓志铭》一篇。</p>"
+            } else if (name === "胃寒呕吐") {
+                two = "李贺是继屈原、李白之后，中国文学史上又一位颇享盛誉的浪漫主义诗人，有“太白仙才，长吉鬼才”之说。作为中唐到晚唐诗风转变期的代表人物，李贺与“诗仙”李白、“诗圣”杜甫、“诗佛”王维齐名，著有《昌谷集》。<br><br>";
+                four = "李贺是继屈原、李白之后，中国文学史上又一位颇享盛誉的浪漫主义诗人，有“太白仙才，长吉鬼才”之说。作为中唐到晚唐诗风转变期的代表人物，李贺与“诗仙”李白、“诗圣”杜甫、“诗佛”王维齐名，著有《昌谷集》。</p>"
+            } else if (name === "痰饮呕吐") {
+                two = "孟郊工诗。因其诗作多写世态炎凉，民间苦难，故有“诗囚”之称，与贾岛并称“郊寒岛瘦”。孟诗现存500多首，以短篇五古最多。今传本《孟东野诗集》10卷。<br><br>";
+                four = "孟郊工诗。因其诗作多写世态炎凉，民间苦难，故有“诗囚”之称，与贾岛并称“郊寒岛瘦”。孟诗现存500多首，以短篇五古最多。今传本《孟东野诗集》10卷。</p>"
+            } else if (name === "风气腹痛") {
+                two = "卢纶，字允言，河中蒲县（今山西蒲县）人，祖籍范阳涿县（今河北涿州），出身范阳卢氏北祖第四房，是北魏济州刺史、光禄大夫卢尚之的后人，唐代诗人，大历十才子之一。<br><br>";
+                four = "著有《卢户部诗集》。</p>"
+            } else if (name === "寒气腹痛") {
+                two = "贾岛，字阆仙，一作浪仙，唐朝河北道幽州范阳人。自号“碣石山人”。唐代诗人，人称“诗奴”。早年出家为僧，法号无本。受教于韩愈，并参加科举，但累举不中第。唐文宗的时候被排挤，贬做遂州长江县主簿，故称贾长江。<br><br>";
+                four = "贾岛著有《长江集》10卷，录诗390余首。通行有《四部丛刊》影印明翻宋本。李嘉言《长江集新校》，用《全唐诗》所收贾诗为底本，参校别本及有关总集、选集，附录所撰《贾岛年谱》、《贾岛交友考》以及所辑贾岛诗评等，较为完备。另有小集3卷、《诗格》1卷传世。</p>"
+            } else if (name === "暑湿腹痛") {
+                two = "刘长卿，字文房，汉族，唐代诗人。宣城（今属安徽）人，后迁居洛阳，河间（今属河北）为其郡望。唐玄宗天宝年间进士。唐肃宗至德年间任监察御史、苏州长洲县尉，唐代宗大历年间任转运使判官，知淮西、鄂岳转运留后，又被诬再贬睦州司马。<br><br>";
+                four = "刘长卿的名作《逢雪宿芙蓉山主人》入选中国全日制学校教材。刘长卿作品有集，称《刘随州集》，《唐诗汇评》称10卷，《唐诗大辞典修订本》称11卷。有《四部丛刊》本、《四部备要》本通行于世。今人注本有储仲君《刘长卿诗编年笺注》、杨世明《刘长卿诗编年校注》。</p>"
+            } else if (name === "燥火腹痛") {
+                two = "李商隐，字义山，号玉谿生，怀州河内（今河南省沁阳市）人。晚唐著名诗人，和杜牧合称“小李杜”。开成二年（837年），进士及第，起家秘书省校书郎，迁弘农县尉，成为泾原节度使王茂元（岳父）幕僚。卷入“牛李党争”的政治旋涡，备受排挤，一生困顿不得志。大中末年，病逝于郑州。<br><br>";
+                four = "擅长诗歌写作，骈文文学价值颇高。李商隐诗歌在《唐诗三百首》中，李商隐的诗作占廿二首，数量位列第四。据《新唐书》有《樊南甲集》二十卷，《樊南乙集》二十卷，《玉奚生诗》三卷，《赋》一卷，《文》一卷，部分作品已失传。有《李义山诗集》。</p>"
+            } else if (name === "痧胀腹痛") {
+                two = "温庭筠，原名岐，字飞卿，太原祁县（今属山西）人。唐代诗人、词人。温庭筠出身没落贵族家庭，为唐初宰相温彦博后裔。富有天赋，文思敏捷，每入试，押官韵，八叉手而成八韵，故有“温八叉”或“温八吟”之称。温庭筠精通音律，诗词兼工。诗与李商隐齐名，时称“温李”。<br><br>";
+                four = "在词史上，与韦庄齐名，并称“温韦”。文笔与李商隐、段成式齐名，三人都排行十六，故合称“三十六体”。其诗今存三百多首，有清顾嗣立重为校注的《温飞卿集笺注》。其词今存七十余首，收录于《花间集》《金荃词》等书中。</p>"
+            }
+            return title + one + two + three + four;
+        }
+
+        const showContentRight = (name) => {
+            const character = document.getElementById('right');
+            if (!character) return;
+
+            const myChartCharacter = echarts.init(character);
+
+            const data = {
+                "风寒束表": [
+                    { "name": "《摄生众妙方》", "value": 5 },
+                    { "name": "《痘疹会通》", "value": 10 },
+                    { "name": "《回春》", "value": 10 },
+                    { "name": "《医方简义》", "value": 5 },
+                    { "name": "《医学正传》", "value": 15 },
+                    { "name": "《外科心法》", "value": 18 },
+                    { "name": "《医统》", "value": 8 },
+                    { "name": "《喉科种福》", "value": 5 }
+                ],
+                "暑湿伤表": [
+                    { "name": "《千金翼方》", "value": 25 },
+                    { "name": "《笔花医镜》", "value": 15 },
+                    { "name": "《温热经解》", "value": 15 },
+                    { "name": "《宋·太平惠民和剂局方》", "value": 5 },
+                    { "name": "《内科摘要》", "value": 20 },
+                    { "name": "《幼科证治大全》", "value": 15 },
+                    { "name": "《普济方》", "value": 15 },
+                    { "name": "《局方》", "value": 15 }
+                ],
+                "风热犯表": [
+                    { "name": "初唐四杰", "value": 25 },
+                    { "name": "格调高昂", "value": 5 },
+                    { "name": "感情奔放", "value": 15 },
+                    { "name": "悲凉凄苦", "value": 10 },
+                    { "name": "满腹才情", "value": 10 },
+                    { "name": "豪情壮志", "value": 5 },
+                    { "name": "暗淡", "value": 15 },
+                    { "name": "哀愁", "value": 20 },
+                    { "name": "凄清", "value": 15 }
+                ],
+                "气虚型": [
+                    { "name": "精练简省", "value": 15 },
+                    { "name": "风骨兼备", "value": 5 },
+                    { "name": "嵚崎磊落", "value": 25 },
+                    { "name": "富艳瑰丽", "value": 10 },
+                    { "name": "清新俊逸", "value": 5 },
+                    { "name": "反复渲染", "value": 15 },
+                    { "name": "气势壮大", "value": 20 },
+                    { "name": "感情真挚", "value": 15 },
+                    { "name": "初唐四杰", "value": 25 }
+                ],
+                "阴虚型": [
+                    { "name": "苍劲有力", "value": 15 },
+                    { "name": "讽刺现实", "value": 5 },
+                    { "name": "愤激慷慨", "value": 25 },
+                    { "name": "感慨时事", "value": 10 },
+                    { "name": "感怀身世", "value": 10 },
+                    { "name": "风骨峥嵘", "value": 5 },
+                    { "name": "寓意深远", "value": 15 },
+                    { "name": "", "value": 20 }
+                ],
+                "太阳症": [
+                    { "name": "诗成泣鬼神", "value": 15 },
+                    { "name": "神奇异彩", "value": 5 },
+                    { "name": "浪漫主义", "value": 25 },
+                    { "name": "豪迈奔放", "value": 10 },
+                    { "name": "飘逸若仙", "value": 10 },
+                    { "name": "清新飘逸", "value": 5 },
+                    { "name": "想象丰富", "value": 15 },
+                    { "name": "意境奇妙", "value": 20 },
+                    { "name": "诗仙", "value": 25 }
+                ],
+                "阳明症": [
+                    { "name": "沉郁顿挫", "value": 5 },
+                    { "name": "忧国忧民", "value": 25 },
+                    { "name": "民间疾苦", "value": 10 },
+                    { "name": "笔底波澜", "value": 10 },
+                    { "name": "诗圣", "value": 25 },
+                    { "name": "语言精炼", "value": 15 },
+                    { "name": "格律严谨", "value": 20 },
+                    { "name": "穷绝工巧", "value": 15 },
+                    { "name": "三吏", "value": 10 },
+                    { "name": "三别", "value": 10 }
+                ],
+                "少阳症": [
+                    { "name": "诗风清淡", "value": 5 },
+                    { "name": "素练质朴", "value": 25 },
+                    { "name": "轻缣素练", "value": 10 },
+                    { "name": "济时适用", "value": 10 },
+                    { "name": "一见而厚遇之", "value": 5 },
+                    { "name": "雅正冲淡", "value": 15 },
+                    { "name": "文章高雅", "value": 20 },
+                    { "name": "诗意超逸", "value": 15 },
+                    { "name": "朴素遒劲", "value": 15 },
+                    { "name": "岭南第一人", "value": 25 }
+                ],
+                "少阴症": [
+                    { "name": "语言精美", "value": 5 },
+                    { "name": "禅意美", "value": 10 },
+                    { "name": "音律美", "value": 10 },
+                    { "name": "山水田园诗派", "value": 25 },
+                    { "name": "秋水芙蕖", "value": 15 },
+                    { "name": "倚风自笑", "value": 20 },
+                    { "name": "词华新朗", "value": 15 },
+                    { "name": "意象幽闲", "value": 15 },
+                    { "name": "诗中有画", "value": 20 },
+                    { "name": "画中有诗", "value": 20 }
+                ],
+                "太阴症": [
+                    { "name": "王孟", "value": 15 },
+                    { "name": "性爱山水", "value": 5 },
+                    { "name": "意境清迥", "value": 25 },
+                    { "name": "韵致流溢", "value": 10 },
+                    { "name": "皆文从字顺", "value": 10 },
+                    { "name": "音韵铿锵", "value": 5 },
+                    { "name": "清诗句句尽堪传", "value": 15 },
+                    { "name": "山水田园", "value": 20 }
+                ],
+                "厥阴症": [
+                    { "name": "精玄微妙", "value": 5 },
+                    { "name": "天机独得", "value": 25 },
+                    { "name": "远出情外", "value": 10 },
+                    { "name": "雄视潘张", "value": 10 },
+                    { "name": "平揖沈谢", "value": 25 },
+                    { "name": "清新飘逸", "value": 15 },
+                    { "name": "飘泊之感", "value": 20 }
+                ],
+                "气虚者": [
+                    { "name": "严正肃然", "value": 5 },
+                    { "name": "高古劲健", "value": 25 },
+                    { "name": "颇有风骨", "value": 10 },
+                    { "name": "悲怆惨恻", "value": 10 },
+                    { "name": "深沉苍郁", "value": 5 },
+                    { "name": "雄浑豪迈", "value": 15 },
+                    { "name": "边塞称世", "value": 20 },
+                    { "name": "七绝圣手", "value": 15 }
+                ],
+                "血亏者": [
+                    { "name": "从容不迫", "value": 5 },
+                    { "name": "淡而有味", "value": 25 },
+                    { "name": "气度雍容", "value": 10 },
+                    { "name": "清新潇洒", "value": 10 },
+                    { "name": "四明有狂客", "value": 25 },
+                    { "name": "风流贺季真", "value": 25 },
+                    { "name": "比兴寄托", "value": 20 }
+                ],
+                "肝胆有火者": [
+                    { "name": "边塞", "value": 5 },
+                    { "name": "意境新奇", "value": 25 },
+                    { "name": "风格奇峭", "value": 10 },
+                    { "name": "气势磅礴", "value": 10 },
+                    { "name": "想象丰富", "value": 5 },
+                    { "name": "词采瑰丽", "value": 15 },
+                    { "name": "热情奔放", "value": 20 },
+                    { "name": "浪漫主义", "value": 15 },
+                    { "name": "高岑", "value": 15 }
+                ],
+                "风气呕吐": [
+                    { "name": "雄浑悲壮", "value": 25 },
+                    { "name": "讽时伤乱", "value": 10 },
+                    { "name": "用词简净", "value": 10 },
+                    { "name": "不加雕琢", "value": 5 },
+                    { "name": "苍茫而不凄凉", "value": 15 },
+                    { "name": "荒渺而不凄切", "value": 20 },
+                    { "name": "厚重深沉", "value": 25 },
+                    { "name": "边塞诗派", "value": 15 }
+                ],
+                "寒气呕吐": [
+                    { "name": "刚直峻切", "value": 10 },
+                    { "name": "受人尊敬", "value": 15 },
+                    { "name": "意气风发", "value": 10 },
+                    { "name": "河东先生", "value": 20 },
+                    { "name": "乐于助人", "value": 15 },
+                    { "name": "高尚节操", "value": 15 },
+                    { "name": "唐宋八大家", "value": 25 },
+                    { "name": "山水田园", "value": 10 }
+                ],
+                "暑气呕吐": [
+                    { "name": "永贞革新", "value": 10 },
+                    { "name": "乐观豁达", "value": 15 },
+                    { "name": "豪放洒脱", "value": 10 },
+                    { "name": "乐观", "value": 20 },
+                    { "name": "豪猛之气", "value": 10 },
+                    { "name": "坚贞", "value": 15 },
+                    { "name": "刘柳", "value": 5 },
+                    { "name": "诗豪", "value": 25 }
+                ],
+                "湿气呕吐": [
+                    { "name": "心为人民", "value": 20 },
+                    { "name": "远大抱负", "value": 15 },
+                    { "name": "散文八大家之一", "value": 15 },
+                    { "name": "敢为天下先", "value": 20 },
+                    { "name": "昌黎先生", "value": 10 },
+                    { "name": "韩文公", "value": 15 },
+                    { "name": "儒家", "value": 10 },
+                    { "name": "伟岸气节", "value": 15 }
+                ],
+                "胃火呕吐": [
+                    { "name": "韦左司", "value": 15 },
+                    { "name": "山水田园", "value": 20 },
+                    { "name": "诗风澄澹", "value": 10 },
+                    { "name": "生活苦难", "value": 20 },
+                    { "name": "病痛孤独", "value": 15 },
+                    { "name": "旷达与愁苦", "value": 10 },
+                    { "name": "豪迈", "value": 5 },
+                    { "name": "自信与自卑", "value": 10 }
+                ],
+                "胃寒呕吐": [
+                    { "name": "宗室意识", "value": 10 },
+                    { "name": "烈性冲动", "value": 15 },
+                    { "name": "通眉长爪", "value": 20 },
+                    { "name": "李昌谷", "value": 15 },
+                    { "name": "太白仙才", "value": 20 },
+                    { "name": "诗鬼", "value": 15 },
+                    { "name": "英年早逝", "value": 10 },
+                    { "name": "浪漫主义", "value": 10 }
+                ],
+                "痰饮呕吐": [
+                    { "name": "放迹林泉", "value": 10 },
+                    { "name": "穷愁潦倒", "value": 15 },
+                    { "name": "耿介倔强", "value": 15 },
+                    { "name": "人生坎坷", "value": 25 },
+                    { "name": "敏感细腻", "value": 10 },
+                    { "name": "诗囚", "value": 15 },
+                    { "name": "悲天悯人", "value": 20 },
+                    { "name": "韩愈", "value": 10 }
+                ],
+                "风气腹痛": [
+                    { "name": "热爱祖国", "value": 10 },
+                    { "name": "一心报国", "value": 10 },
+                    { "name": "坚韧", "value": 5 },
+                    { "name": "心胸开阔", "value": 15 },
+                    { "name": "心于百姓", "value": 10 },
+                    { "name": "世道不宁", "value": 10 },
+                    { "name": "卢户部诗集", "value": 10 },
+                    { "name": "边塞诗派", "value": 15 }
+                ],
+                "寒气腹痛": [
+                    { "name": "碣石山人", "value": 15 },
+                    { "name": "诗奴", "value": 15 },
+                    { "name": "苦吟诗人", "value": 10 },
+                    { "name": "受教于韩愈", "value": 20 },
+                    { "name": "一生穷愁", "value": 15 },
+                    { "name": "荒凉枯寂之境", "value": 5 },
+                    { "name": "郊寒岛瘦", "value": 10 },
+                    { "name": "长江集", "value": 10 },
+                    { "name": "冷漠内向", "value": 15 }
+                ],
+                "暑湿腹痛": [
+                    { "name": "五言长城", "value": 25 },
+                    { "name": "逢雪宿芙蓉山主人", "value": 15 },
+                    { "name": "刚愎自重", "value": 15 },
+                    { "name": "坚韧刚强", "value": 10 },
+                    { "name": "刻苦耐劳", "value": 10 },
+                    { "name": "自命清高", "value": 15 },
+                    { "name": "干练刚直", "value": 5 },
+                    { "name": "饱读诗书", "value": 10 },
+                    { "name": "沉郁", "value": 5 }
+                ],
+                "燥火腹痛": [
+                    { "name": "文学基因", "value": 20 },
+                    { "name": "政治生涯坎坷离奇", "value": 5 },
+                    { "name": "空怀大志", "value": 10 },
+                    { "name": "沉于下僚", "value": 10 },
+                    { "name": "才能过人", "value": 20 },
+                    { "name": "晚唐诗坛三杰", "value": 25 },
+                    { "name": "小李杜", "value": 5 }
+                ],
+                "痧胀腹痛": [
+                    { "name": "诗辞藻华丽", "value": 10 },
+                    { "name": "温八叉", "value": 15 },
+                    { "name": "好讥刺权贵", "value": 10 },
+                    { "name": "一生坎坷", "value": 15 },
+                    { "name": "精通音律", "value": 20 },
+                    { "name": "花间派", "value": 25 },
+                    { "name": "三十六体", "value": 10 },
+                    { "name": "温礼", "value": 5 },
+                    { "name": "文思敏捷", "value": 10 }
+                ]
+            };
+
+            const optionCharacter = {
+                series: [{
+                    type: 'wordCloud',
+                    shape: 'circle',
+                    left: 'center',
+                    top: 'center',
+                    width: '100%',
+                    height: '100%',
+                    right: null,
+                    bottom: null,
+                    sizeRange: [27, 50],
+                    rotationRange: [0, 0],
+                    rotationStep: 25,
+                    gridSize: 4,
+                    drawOutOfBound: true,
+                    data: data[name],
+                    textStyle: {
+                        normal: {
+                            color: function () {
+                                return 'rgb(' +
+                                    Math.round(Math.random() * 255) +
+                                    ', ' + Math.round(Math.random() * 255) +
+                                    ', ' + Math.round(Math.random() * 255) + ')';
+                            }
+                        },
+                        emphasis: {
+                            shadowBlur: 10,
+                            shadowColor: '#333'
+                        }
+                    }
+                }]
+            };
+            myChartCharacter.setOption(optionCharacter);
+        }
+
+        const mychart = document.getElementById('mychart');
+        const myChart = echarts.init(mychart);
+
+        const option = {
+            tooltip: {
+                trigger: 'item',
+                triggerOn: 'mousemove',
+                backgroundColor: 'rgba(0,0,0,0.8)',
+                borderColor: '#333',
+                textStyle: {
+                    color: '#fff',
+                    fontSize: 14
+                },
+                formatter: function (param) {
+                    if (param.data.tooltip && param.data.tooltip.formatter) {
+                        return param.data.tooltip.formatter;
+                    }
+                    return `<div style="font-size:16px;color:#fff;">${param.name}</div>`;
+                }
+            },
+            series: [{
+                type: 'tree',
+                data: [data],
+                left: '5%',
+                right: '5%',
+                top: '10%',
+                bottom: '15%',
+                symbol: 'circle',
+                nodeSize: [80, 40],
+                layout: 'orthogonal',
+                symbolSize: function (value, params) {
+                    if (params.name === "疾病") return 60;
+                    else if (["感冒", "头痛", "呕吐", "腹痛"].includes(params.name)) return 45;
+                    else return 35;
+                },
+                orient: 'vertical',
+                expandAndCollapse: true,
+                lineStyle: {
+                    color: '#6E7074',
+                    width: 2,
+                    curveness: 0.3
+                },
+                itemStyle: {
+                    color: {
+                        type: 'radial',
+                        x: 0.5,
+                        y: 0.5,
+                        r: 0.5,
+                        colorStops: [{
+                            offset: 0,
+                            color: '#8392A5'
+                        }, {
+                            offset: 1,
+                            color: '#2C343C'
+                        }]
+                    },
+                    borderWidth: 2,
+                    borderColor: '#fff',
+                    shadowBlur: 8,
+                    shadowColor: 'rgba(0, 0, 0, 0.3)'
+                },
+                label: {
+                    position: ['70%', '-10%'],
+                    rotate: 0,
+                    verticalAlign: 'middle',
+                    align: 'right',
+                    fontSize: 16,
+                    color: '#333',
+                    fontWeight: 'bold',
+                    textShadowColor: 'rgba(255,255,255,0.8)',
+                    textShadowBlur: 2,
+                    formatter: function (params) {
+                        return `{text|${params.name}}`;
+                    },
+                    rich: {
+                        text: {
+                            padding: [2, 5],
+                            backgroundColor: 'rgba(255,255,255,0.8)',
+                            borderRadius: 4
+                        }
+                    }
+                },
+                leaves: {
+                    label: {
+                        position: ['50%', '120%'],
+                        verticalAlign: 'top',
+                        align: 'center',
+                        color: '#409EFF',
+                        fontSize: 14,
+                        padding: [5, 10],
+                        backgroundColor: 'rgba(255,255,255,0.9)',
+                        borderRadius: 6,
+                        borderColor: '#409EFF',
+                        borderWidth: 1,
+                        formatter: function (params) {
+                            // 竖着显示文字
+                            return params.name.split('').join('\n');
+                        },
+                        width: 20, // 设置宽度以适应竖向文字
+                        height: 60 // 动态设置高度
+                    },
+                    itemStyle: {
+                        color: '#E6F7FF',
+                        borderColor: '#409EFF',
+                        shadowBlur: 6
+                    },
+                    layout: {
+                        padding: 30,
+                        margin: 40
+                    }
+                },
+                expandAndCollapse: true,
+                initialTreeDepth: 2,
+                grid: {
+                    top: '10%',
+                    bottom: '20%',
+                    containLabel: true
+                },
+                emphasis: {
+                    focus: 'descendant',
+                    label: {
+                        color: '#FF0066'
+                    },
+                    itemStyle: {
+                        color: '#FFE6EF'
+                    }
+                },
+                animationEasing: 'cubicInOut'
+            }],
+            // backgroundColor: {
+            //     type: 'linear',
+            //     x: 0,
+            //     y: 0,
+            //     x2: 1,
+            //     y2: 1,
+            //     colorStops: [{
+            //         offset: 0,
+            //         color: '#f3f6f8'
+            //     }, {
+            //         offset: 1,
+            //         color: '#e9edf0'
+            //     }]
+            // },
+            animationDuration: 1000,
+            animationDurationUpdate: 1500
+        }; myChart.setOption(option);
+
+        myChart.on('click', function (params) {
+            if (!["疾病", "感冒", "头痛", "呕吐", "腹痛"].includes(params.name)) {
+                document.getElementById("tip").style.display = "block"; // 显示提示
+                document.getElementById("return").style.display = "block"; // 显示返回按钮
+
+                document.getElementById("mid").innerHTML = showContentMid(params.name); // 更新中间内容
+                showContentRight(params.name); // 根据`params.name`加载右侧内容
+            }
+        });
+
+        document.querySelector('#return button').addEventListener('click', function () {
+            document.getElementById("tip").style.display = "none";
+            document.getElementById("return").style.display = "none";
+        });
+
+        // 响应式调整
+        window.addEventListener('resize', function () {
+            myChart.resize();
+        });
+    </script>
+</body>
+<a href="javascript:history.back()" class="back-btn">
+    <span>返回</span>
+</a>
+
+</html>

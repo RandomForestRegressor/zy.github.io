@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>中国医学（1911年之前）知识图谱</title>
+    <script src="./js/echarts.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background-image: url('./img_three1/bg.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        #garps {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        #p5-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .buttons {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 15px;
+            z-index: 100;
+        }
+
+        /* 按钮样式保持不变 */
+        .buttons button {
+            padding: 12px 24px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            color: white;
+            position: relative;
+            overflow: hidden;
+            min-width: 120px;
+            text-align: center;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .buttons button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .buttons button:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .buttons button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg,
+                    transparent 10%,
+                    rgba(255, 255, 255, 0.3) 50%,
+                    transparent 90%);
+            transform: translateX(-100%);
+            transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .buttons button:hover::after {
+            transform: translateX(100%);
+        }
+
+        #btn-person {
+            background: linear-gradient(135deg, #958b54, #bfb222);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        #btn-field {
+            background: linear-gradient(135deg, #708ca3, #2aa3cd);
+            border: 1px solid rgba(70, 130, 180, 0.3);
+        }
+
+        #btn-book {
+            background: linear-gradient(135deg, #8f6e67, #d83737);
+            border: 1px solid rgba(255, 99, 71, 0.3);
+        }
+
+        #btn-all {
+            background: linear-gradient(135deg, #639e63, #137013);
+            border: 1px solid rgba(50, 205, 50, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .buttons {
+                top: 15px;
+                right: 15px;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .buttons button {
+                padding: 10px 18px;
+                font-size: 14px;
+                min-width: 100px;
+                border-radius: 25px;
+            }
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            padding: 12px 24px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 30px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            color: white;
+            position: relative;
+            overflow: hidden;
+            min-width: 120px;
+            text-align: center;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(135deg, #639e63, #137013);
+            /* 绿色系渐变，与"显示全部"按钮风格统一 */
+            border: 1px solid rgba(50, 205, 50, 0.3);
+        }
+
+        .back-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .back-btn:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .back-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg,
+                    transparent 10%,
+                    rgba(255, 255, 255, 0.3) 50%,
+                    transparent 90%);
+            transform: translateX(-100%);
+            transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .back-btn:hover::after {
+            transform: translateX(100%);
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 768px) {
+            .back-btn {
+                top: 15px;
+                left: 15px;
+                padding: 10px 18px;
+                font-size: 14px;
+                min-width: 100px;
+                border-radius: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div id="garps"></div>
+        <div id="p5-canvas"></div>
+        <a href="javascript:history.back()" class="back-btn">
+            ← 返回
+        </a>
+        <div class="buttons">
+            <button id="btn-person">人物</button>
+            <button id="btn-field">领域</button>
+            <button id="btn-book">名著与成就</button>
+            <button id="btn-all">显示全部</button>
+        </div>
+    </div>
+    <script>
+        // ECharts 图表初始化
+        var chart = echarts.init(document.getElementById('garps'), 'white', { renderer: 'canvas' });
+
+        // 初始化数据 - 完全保留原始数据
+        var originalOption = {
+            tooltip: {
+                trigger: 'item',
+                formatter: function (params) {
+                    if (params.dataType === 'node') {
+                        return `
+						<div style='padding:6px 10px'>
+							<strong style='font-size:14px;'>${params.data.name}</strong><br/>
+							类型：${params.data.category === 0 ? '人物' : params.data.category === 1 ? '领域' : '名著与成就'}
+						</div>
+					`;
+                    } else if (params.dataType === 'edge') {
+                        return `${params.data.source} → ${params.data.target}<br/>${params.data.value}`;
+                    }
+                },
+                backgroundColor: 'rgba(50,50,50,0.85)',
+                textStyle: { color: '#fff' },
+                extraCssText: 'box-shadow: 0 2px 12px rgba(0,0,0,0.3); border-radius: 6px;'
+            },
+
+            grid: {
+                left: '3%',
+                top: '3%',
+                right: '3%',
+                bottom: '3%',
+            },
+            toolbox: {
+                feature: {
+                    saveAsImage: {}
+                }
+            },
+            series: [{
+                type: 'graph',
+                layout: 'force',
+                force: {
+                    repulsion: 1000,
+                    edgeLength: 70,
+                    layoutAnimation: true,
+                    friction: 0.1,  // 添加摩擦力使动画更稳定
+                    gravity: 0.1    // 添加重力使节点不易飞出
+                },
+                symbolSize: 70,
+                nodeScaleRatio: 1,
+                roam: true,
+                scaleLimit: {        // 限制缩放范围
+                    min: 0.5,
+                    max: 2
+                },
+                draggable: true,
+                focusNodeAdjacency: true,
+                edgeSymbol: null,
+                label: {
+                    show: true,
+                    position: 'inside',
+                    color: 'brown',
+                    fontSize: 11
+                },
+                edgeLabel: {
+                    show: true,
+                    fontSize: 12,
+                    color: '#b18787',
+                    formatter: "{c}"
+                },
+                categories: [
+                    { name: '人物', itemStyle: { color: '#FFD700' } },
+                    { name: '领域', itemStyle: { color: '#87CEEB' } },
+                    { name: '名著与成就', itemStyle: { color: '#FF6347' } }
+                ],
+                itemStyle: {
+                    borderColor: '#222b28',
+                    borderWidth: 2,
+                    shadowBlur: 10,
+                    shadowColor: '#b18787',
+                },
+                lineStyle: {
+                    opacity: 0.9,
+                    width: 2,
+                    curveness: 0.3,
+                    color: {
+                        type: 'linear',
+                        x: 0,
+                        y: 0,
+                        x2: 0,
+                        y2: 1,
+                        colorStops: [{
+                            offset: 0,
+                            color: '#e0f55a'
+                        }, {
+                            offset: 1,
+                            color: '#e8f1e8'
+                        }],
+                        globalCoord: false
+                    }
+                },
+                symbolKeepAspect: false,
+                emphasis: {
+                    itemStyle: {
+                        shadowColor: 'rgba(0, 0, 0, 0.6)',
+                        shadowBlur: 30,
+                        shadowOffsetX: 0,
+                        shadowOffsetY: 6
+                    }
+                },
+                data: [
+                    { name: '李时珍', category: 0 },
+                    { name: '张仲景', category: 0 },
+                    { name: '神农氏', category: 0 },
+                    { name: '黄帝', category: 0 },
+                    { name: '伏羲', category: 0 },
+                    { name: '扁鹊', category: 0 },
+                    { name: '皇甫谧', category: 0 },
+                    { name: '华佗', category: 0 },
+                    { name: '巢元方', category: 0 },
+                    { name: '孙思邈', category: 0 },
+                    { name: '王清任', category: 0 },
+                    { name: '陶弘景', category: 0 },
+                    { name: '葛洪', category: 0 },
+                    { name: '雷斆', category: 0 },
+                    { name: '钱乙', category: 0 },
+                    { name: '叶天士', category: 0 },
+                    { name: '杨继洲', category: 0 },
+                    { name: '伊尹', category: 0 },
+                    { name: '陈自明', category: 0 },
+                    { name: '危亦林', category: 0 },
+                    { name: '忽思慧', category: 0 },
+                    { name: '黄庭镜', category: 0 },
+                    { name: '赵学敏', category: 0 },
+                    { name: '刘完素', category: 0 },
+                    { name: '张从正', category: 0 },
+                    { name: '李杲', category: 0 },
+                    { name: '朱震亨', category: 0 },
+
+                    { name: '医疗外科', category: 1 },
+                    { name: '药学', category: 1 },
+                    { name: '疾病分类/成因学', category: 1 },
+                    { name: '法医学', category: 1 },
+                    { name: '内科学', category: 1 },
+
+                    { name: '《难经》', category: 2 },
+                    { name: '《本草纲目》', category: 2 },
+                    { name: '麻沸散', category: 2 },
+                    { name: '五禽戏', category: 2 },
+                    { name: '制九针', category: 2 },
+                    { name: '《神农本草经》', category: 2 },
+                    { name: '《针灸甲乙经》', category: 2 },
+                    { name: '《黄帝内经》', category: 2 },
+                    { name: '《伤寒杂病论》', category: 2 },
+                    { name: '《诸病源候论》', category: 2 },
+                    { name: '《千金方》', category: 2 },
+                    { name: '《洗冤集录》', category: 2 },
+                    { name: '《温疫论》', category: 2 },
+                    { name: '《医林改错》', category: 2 },
+                    { name: '《神农本草经集注》', category: 2 },
+                    { name: '《肘后备急方》', category: 2 },
+                    { name: '《雷公炮炙论》', category: 2 },
+                    { name: '《小儿药证直诀》', category: 2 },
+                    { name: '卫气营血辨证', category: 2 },
+                    { name: '《针灸大成》', category: 2 },
+                    { name: '《折狱龟鉴》', category: 2 },
+                    { name: '药食同源理论', category: 2 },
+                    { name: '导引术', category: 2 },
+                    { name: '药物炮制', category: 2 },
+                    { name: '汤液疗法', category: 2 },
+                    { name: '外伤缝合术', category: 2 },
+                    { name: '药物炼制', category: 2 },
+                    { name: '肠道手术', category: 2 },
+                    { name: '银膏补牙', category: 2 },
+                    { name: '妇科胎位矫正术', category: 2 },
+                    { name: '正骨悬吊复位法', category: 2 },
+                    { name: '食疗理论体系', category: 2 },
+                    { name: '人痘接种术', category: 2 },
+                    { name: '舌诊体系', category: 2 },
+                    { name: '眼科金针拨内障', category: 2 },
+                    { name: '药物显微鉴别', category: 2 },
+                    { name: '红油伞滤光法', category: 2 },
+                    { name: '气管缝合与唇裂修补术', category: 2 },
+                    { name: '针灸铜人标准化', category: 2 },
+                    { name: '《周礼》食医制度', category: 2 },
+                    { name: '《导引图》', category: 2 },
+                    { name: '《妇人大全良方》', category: 2 },
+                    { name: '《饮膳正要》', category: 2 },
+                    { name: '《种痘新书》', category: 2 },
+                    { name: '《温热论》', category: 2 },
+                    { name: '《目经大成》', category: 2 },
+                    { name: '《本草纲目拾遗》', category: 2 }
+                ],
+                links: [
+                    { source: '李时珍', target: '吴又可', value: '明' },
+                    { source: '李时珍', target: '杨继洲', value: '明' },
+                    { source: '吴又可', target: '杨继洲', value: '明' },
+                    { source: '王清任', target: '叶天士', value: '清' },
+                    { source: '神农氏', target: '扁鹊', value: '先秦' },
+                    { source: '神农氏', target: '黄帝', value: '先秦' },
+                    { source: '扁鹊', target: '黄帝', value: '先秦' },
+                    { source: '伏羲', target: '神农氏', value: '先秦' },
+                    { source: '伏羲', target: '扁鹊', value: '先秦' },
+                    { source: '伏羲', target: '黄帝', value: '先秦' },
+                    { source: '华佗', target: '张仲景', value: '汉' },
+                    { source: '皇甫谧', target: '葛洪', value: '晋' },
+                    { source: '雷斆', target: '陶弘景', value: '南' },
+
+                    // 先秦时期
+                    { source: '神农氏', target: '黄帝', value: '先秦' },
+                    { source: '神农氏', target: '伏羲', value: '先秦' },
+                    { source: '黄帝', target: '伏羲', value: '先秦' },
+
+                    // 汉代
+                    { source: '华佗', target: '张仲景', value: '汉' },
+
+                    // 晋朝
+                    { source: '皇甫谧', target: '葛洪', value: '晋' },
+
+                    // 唐代
+                    { source: '巢元方', target: '孙思邈', value: '唐' },
+
+                    // 宋代
+                    { source: '钱乙', target: '宋慈', value: '宋' },
+
+                    // 金元四大家
+                    { source: '刘完素', target: '张从正', value: '金元' },
+                    { source: '李杲', target: '朱震亨', value: '金元' },
+                    { source: '刘完素', target: '朱震亨', value: '金元' },
+
+                    // 明代
+                    { source: '李时珍', target: '杨继洲', value: '明' },
+                    { source: '李时珍', target: '吴又可', value: '明' },
+                    { source: '杨继洲', target: '吴又可', value: '明' },
+
+                    // 清代
+                    { source: '叶天士', target: '王清任', value: '清' },
+                    { source: '叶天士', target: '黄庭镜', value: '清' },
+                    { source: '王清任', target: '黄庭镜', value: '清' },
+                    { source: '叶天士', target: '赵学敏', value: '清' },
+
+
+                    { source: '神农氏', target: '《神农本草经》', value: ' ' },
+                    { source: '黄帝', target: '《黄帝内经》', value: ' ' },
+                    { source: '扁鹊', target: '《难经》', value: ' ' },
+                    { source: '伏羲', target: '制九针', value: ' ' },
+                    { source: '皇甫谧', target: '《针灸甲乙经》', value: ' ' },
+                    { source: '陶弘景', target: '《神农本草经集注》', value: ' ' },
+                    { source: '华佗', target: '麻沸散', value: ' ' },
+                    { source: '华佗', target: '五禽戏', value: ' ' },
+                    { source: '葛洪', target: '《肘后备急方》', value: ' ' },
+                    { source: '雷斆', target: '《雷公炮炙论》', value: ' ' },
+                    { source: '巢元方', target: '《诸病源候论》', value: ' ' },
+                    { source: '孙思邈', target: '《千金方》', value: ' ' },
+                    { source: '宋慈', target: '《洗冤集录》', value: ' ' },
+                    { source: '钱乙', target: '《小儿药证直诀》', value: ' ' },
+                    { source: '李时珍', target: '《本草纲目》', value: ' ' },
+                    { source: '吴又可', target: '《温疫论》', value: ' ' },
+                    { source: '王清任', target: '《医林改错》', value: ' ' },
+                    { source: '叶天士', target: '卫气营血辨证', value: ' ' },
+                    { source: '杨继洲', target: '《针灸大成》', value: ' ' },
+
+
+                    { source: '医疗外科', target: '《针灸大成》', value: ' 属' },
+                    { source: '药学', target: '《神农本草经》', value: '属 ' },
+                    { source: '疾病分类/成因学', target: '《伤寒杂病论》', value: '属 ' },
+                    { source: '法医学', target: '《洗冤集录》', value: '属 ' },
+                    { source: '内科学', target: '《黄帝内经》', value: ' 属' },
+                    { source: '内科学', target: '《难经》', value: ' 属' },
+                    { source: '医疗外科', target: '制九针', value: ' 属' },
+                    { source: '医疗外科', target: '《针灸甲乙经》', value: '属 ' },
+                    { source: '药学', target: '《神农本草经集注》', value: ' 属' },
+                    { source: '医疗外科', target: '麻沸散', value: '属 ' },
+                    { source: '医疗外科', target: '《肘后备急方》', value: ' 属' },
+                    { source: '医疗外科', target: '《雷公炮炙论》', value: ' 属' },
+                    { source: '疾病分类/成因学', target: '《诸病源候论》', value: ' 属' },
+                    { source: '内科学', target: '《千金方》', value: ' 属' },
+                    { source: '内科学', target: '《小儿药证直诀》', value: ' 属' },
+                    { source: '内科学', target: '《温疫论》', value: '属 ' },
+                    { source: '内科学', target: '《医林改错》', value: ' 属' },
+                    { source: '法医学', target: '《折狱龟鉴》', value: '属 ' },
+                    { source: '医疗外科', target: '五禽戏', value: ' 属' },
+                    { source: '内科学', target: '卫气营血辨证', value: '属 ' },
+
+                    // 药学领域名著关联
+                    { source: '《神农本草经》', target: '药食同源理论', value: '药学' },
+                    { source: '《神农本草经集注》', target: '药物炮制', value: '药学' },
+                    { source: '《雷公炮炙论》', target: '药物炮制', value: '药学' },
+                    { source: '《肘后备急方》', target: '药物炼制', value: '药学' },
+                    { source: '《本草纲目》', target: '药物显微鉴别', value: '药学' },
+                    { source: '《饮膳正要》', target: '食疗理论体系', value: '药学' },
+                    { source: '《种痘新书》', target: '人痘接种术', value: '药学' },
+
+                    // 医疗外科领域名著关联
+                    { source: '制九针', target: '银膏补牙', value: '外科' },
+                    { source: '麻沸散', target: '肠道手术', value: '外科' },
+                    { source: '《针灸甲乙经》', target: '外伤缝合术', value: '外科' },
+                    { source: '《针灸大成》', target: '眼科金针拨内障', value: '外科' },
+                    { source: '《妇人大全良方》', target: '妇科胎位矫正术', value: '外科' },
+                    { source: '五禽戏', target: '导引术', value: '外科' },
+                    { source: '《千金方》', target: '气管缝合与唇裂修补术', value: '外科' },
+
+                    // 内科学领域名著关联
+                    { source: '《黄帝内经》', target: '汤液疗法', value: '内科' },
+                    { source: '《伤寒杂病论》', target: '舌诊体系', value: '内科' },
+                    { source: '《诸病源候论》', target: '卫气营血辨证', value: '内科' },
+                    { source: '《小儿药证直诀》', target: '食疗理论体系', value: '内科' },
+                    { source: '《温疫论》', target: '导引术', value: '内科' },
+                    { source: '《医林改错》', target: '针灸铜人标准化', value: '内科' },
+
+                    // 法医学领域名著关联
+                    { source: '《洗冤集录》', target: '红油伞滤光法', value: '法医' },
+                    { source: '《折狱龟鉴》', target: '红油伞滤光法', value: '法医' },
+
+                    // 疾病分类/成因学领域名著关联
+                    { source: '《难经》', target: '卫气营血辨证', value: '疾病学' },
+                    { source: '《神农本草经》', target: '药食同源理论', value: '疾病学' },
+
+                    // 新增链接关系
+                    // 先秦至秦汉时期
+                    { source: '药学', target: '药食同源理论', value: '属' },
+                    { source: '内科学', target: '导引术', value: '属' },
+                    { source: '药学', target: '药物炮制', value: '属' },
+                    { source: '伊尹', target: '汤液疗法', value: '商代' },
+                    { source: '内科学', target: '汤液疗法', value: '属' },
+
+                    // 东汉至魏晋南北朝
+                    { source: '华佗', target: '外伤缝合术', value: '汉' },
+                    { source: '医疗外科', target: '外伤缝合术', value: '属' },
+                    { source: '华佗', target: '五禽戏', value: '汉' },
+                    { source: '葛洪', target: '药物炼制', value: '晋' },
+                    { source: '药学', target: '药物炼制', value: '属' },
+                    { source: '华佗', target: '肠道手术', value: '汉' },
+                    { source: '医疗外科', target: '肠道手术', value: '属' },
+
+                    // 隋唐至宋元时期
+                    { source: '医疗外科', target: '银膏补牙', value: '属' },
+                    { source: '陈自明', target: '妇科胎位矫正术', value: '宋' },
+                    { source: '医疗外科', target: '妇科胎位矫正术', value: '属' },
+                    { source: '危亦林', target: '正骨悬吊复位法', value: '元' },
+                    { source: '医疗外科', target: '正骨悬吊复位法', value: '属' },
+                    { source: '忽思慧', target: '食疗理论体系', value: '元' },
+                    { source: '药学', target: '食疗理论体系', value: '属' },
+
+                    // 明清时期
+                    { source: '药学', target: '人痘接种术', value: '属' },
+                    { source: '叶天士', target: '舌诊体系', value: '清' },
+                    { source: '内科学', target: '舌诊体系', value: '属' },
+                    { source: '黄庭镜', target: '眼科金针拨内障', value: '清' },
+                    { source: '医疗外科', target: '眼科金针拨内障', value: '属' },
+                    { source: '赵学敏', target: '药物显微鉴别', value: '清' },
+                    { source: '药学', target: '药物显微鉴别', value: '属' },
+
+                    // 补充案例
+                    { source: '法医学', target: '红油伞滤光法', value: '属' },
+                    { source: '医疗外科', target: '气管缝合与唇裂修补术', value: '属' },
+                    { source: '内科学', target: '针灸铜人标准化', value: '属' },
+
+                    // 著作与成就关系
+                    { source: '《妇人大全良方》', target: '妇科胎位矫正术', value: '医疗外科 ' },
+                    { source: '《饮膳正要》', target: '食疗理论体系', value: '药学 ' },
+                    { source: '《种痘新书》', target: '人痘接种术', value: '内科学 ' },
+                    { source: '《温热论》', target: '舌诊体系', value: '医疗外科 ' },
+                    { source: '《目经大成》', target: '眼科金针拨内障', value: '医疗外科 ' },
+                    { source: '《本草纲目拾遗》', target: '药物显微鉴别', value: '药学 ' },
+
+                    // 药学领域名著关联
+                    { source: '《神农本草经》', target: '《神农本草经集注》', value: '药学' },
+                    { source: '《神农本草经》', target: '《雷公炮炙论》', value: '药学' },
+                    { source: '《肘后备急方》', target: '《本草纲目》', value: '药学' },
+                    { source: '《饮膳正要》', target: '《本草纲目拾遗》', value: '药学' },
+
+                    // 医疗外科领域名著关联
+                    { source: '《针灸甲乙经》', target: '《针灸大成》', value: '外科' },
+                    { source: '《妇人大全良方》', target: '《千金方》', value: '外科' },
+                    { source: '制九针', target: '麻沸散', value: '外科' },
+
+                    // 内科学领域名著关联
+                    { source: '《黄帝内经》', target: '《伤寒杂病论》', value: '内科' },
+                    { source: '《诸病源候论》', target: '《温疫论》', value: '内科' },
+                    { source: '《小儿药证直诀》', target: '《医林改错》', value: '内科' },
+
+                    // 法医学领域名著关联
+                    { source: '《洗冤集录》', target: '《折狱龟鉴》', value: '法医' },
+
+                    // 疾病分类学领域名著关联
+                    { source: '《难经》', target: '《诸病源候论》', value: '疾病学' },
+                ],
+            }]
+        };
+
+        // 保存原始数据的深拷贝
+        var originalData = JSON.parse(JSON.stringify(originalOption.series[0].data));
+        var originalLinks = JSON.parse(JSON.stringify(originalOption.series[0].links));
+
+        // 为所有节点添加初始位置
+        originalData.forEach(function (node) {
+            if (!node.x) node.x = Math.random() * 800;
+            if (!node.y) node.y = Math.random() * 600;
+            node.fixed = false;
+        });
+
+        chart.setOption(originalOption);
+
+        // 窗口大小改变时重新调整图表大小
+        window.addEventListener('resize', function () {
+            chart.resize();
+        });
+
+        // 点击按钮筛选数据
+        document.getElementById('btn-person').addEventListener('click', function () {
+            filterData(0); // 显示人物
+        });
+
+        document.getElementById('btn-field').addEventListener('click', function () {
+            filterData(1); // 显示领域
+        });
+
+        document.getElementById('btn-book').addEventListener('click', function () {
+            filterData(2); // 显示名著
+        });
+
+        document.getElementById('btn-all').addEventListener('click', function () {
+            restoreAll(); // 显示全部
+        });
+
+        function filterData(category) {
+            const filteredData = originalData.filter(item => item.category === category);
+            // 找出所有与过滤后节点相关的链接
+            const filteredLinks = originalLinks.filter(link => {
+                const sourceInFiltered = filteredData.some(item => item.name === link.source);
+                const targetInFiltered = filteredData.some(item => item.name === link.target);
+                return sourceInFiltered && targetInFiltered;
+            });
+
+            // 获取所有相关节点（包括链接中涉及的节点）
+            const allRelatedNodes = new Set();
+            filteredLinks.forEach(link => {
+                allRelatedNodes.add(link.source);
+                allRelatedNodes.add(link.target);
+            });
+
+            // 最终显示的数据包括过滤的类别和链接相关的其他类别节点
+            const finalData = originalData.filter(item =>
+                item.category === category || allRelatedNodes.has(item.name)
+            );
+
+            // 更新图表数据
+            chart.setOption({
+                series: [{
+                    data: finalData,
+                    links: filteredLinks
+                }]
+            }, { notMerge: false });
+        }
+
+        function restoreAll() {
+            // 恢复初始数据
+            chart.setOption({
+                series: [{
+                    data: originalData,
+                    links: originalLinks
+                }]
+            }, { notMerge: false });
+        }
+
+        // 节点自动移动动画
+        function startNodeAnimation() {
+            setInterval(function () {
+                var option = chart.getOption();
+                if (!option || !option.series || !option.series[0] || !option.series[0].data) return;
+
+                var currentData = option.series[0].data.map(function (n) {
+                    return {
+                        ...n,
+                        x: typeof n.x === 'number' ? n.x : Math.random() * 800,
+                        y: typeof n.y === 'number' ? n.y : Math.random() * 600
+                    };
+                });
+
+                var targetData = currentData.map(function (n) {
+                    return {
+                        ...n,
+                        x: n.x + (Math.random() - 0.5) * 20,
+                        y: n.y + (Math.random() - 0.5) * 20
+                    };
+                });
+
+                var step = 0;
+                var steps = 30;
+
+                var timer = setInterval(function () {
+                    currentData = currentData.map(function (n, i) {
+                        return {
+                            ...n,
+                            x: n.x + (targetData[i].x - n.x) * 0.1,
+                            y: n.y + (targetData[i].y - n.y) * 0.1
+                        };
+                    });
+
+                    chart.setOption({
+                        series: [{
+                            data: currentData,
+                            force: {
+                                initLayout: null  // 防止重新初始化布局
+                            }
+                        }]
+                    }, { notMerge: false });
+
+                    step++;
+                    if (step >= steps) clearInterval(timer);
+                }, 50);
+
+                // 自动轻微视角移动（模拟跟随李时珍）
+                chart.dispatchAction({
+                    type: 'graphRoam',
+                    dx: 2 * (Math.random() - 0.5),
+                    dy: 2 * (Math.random() - 0.5),
+                    zoom: 1
+                });
+
+            }, 4000);
+        }
+
+        // 延迟启动动画
+        //setTimeout(startNodeAnimation, 1000);
+
+        // p5.js 交互效果
+        let p5Sketch = function (p) {
+            let particles = [];
+            let isDragging = false;
+            let draggedParticle = null;
+
+            p.setup = function () {
+                let canvas = p.createCanvas(p.windowWidth, p.windowHeight);
+                canvas.parent('p5-canvas');
+                p.noStroke();
+
+                // 初始化粒子
+                for (let i = 0; i < 50; i++) {
+                    particles.push({
+                        x: p.random(p.width),
+                        y: p.random(p.height),
+                        size: p.random(5, 15),
+                        speedX: p.random(-1, 1),
+                        speedY: p.random(-1, 1),
+                        color: p.color(255, 255, 255, p.random(50, 150))
+                    });
+                }
+            };
+
+            p.draw = function () {
+                p.clear();
+
+                // 更新和绘制粒子
+                for (let particle of particles) {
+                    // 更新位置
+                    particle.x += particle.speedX;
+                    particle.y += particle.speedY;
+
+                    // 边界检查
+                    if (particle.x < 0 || particle.x > p.width) particle.speedX *= -1;
+                    if (particle.y < 0 || particle.y > p.height) particle.speedY *= -1;
+
+                    // 绘制粒子
+                    p.fill(particle.color);
+                    p.ellipse(particle.x, particle.y, particle.size);
+
+                    // 鼠标交互效果
+                    let distance = p.dist(p.mouseX, p.mouseY, particle.x, particle.y);
+                    if (distance < 100) {
+                        let force = p.map(distance, 0, 100, 0.5, 0);
+                        particle.x += (particle.x - p.mouseX) * force;
+                        particle.y += (particle.y - p.mouseY) * force;
+                    }
+                }
+
+                // 鼠标悬停效果
+                if (!isDragging && p.mouseX > 0 && p.mouseX < p.width && p.mouseY > 0 && p.mouseY < p.height) {
+                    p.fill(255, 255, 255, 30);
+                    p.ellipse(p.mouseX, p.mouseY, 150);
+                }
+            };
+
+            p.mousePressed = function () {
+                isDragging = true;
+            };
+
+            p.mouseReleased = function () {
+                isDragging = false;
+                draggedParticle = null;
+            };
+
+            p.windowResized = function () {
+                p.resizeCanvas(p.windowWidth, p.windowHeight);
+            };
+        };
+
+        // 启动p5.js
+        new p5(p5Sketch);
+    </script>
+</body>
+
+</html>

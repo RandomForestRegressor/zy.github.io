@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0" />
+    <title>中国古代中药学可视化大屏</title>
+    <style>
+        /* 整体样式优化 */
+        body {
+            font-family: '黑体', KaiTi, serif;
+
+        }
+
+        .main {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr 1fr;
+            /* 列数和宽度 */
+            grid-template-rows: auto;
+            /* 行高 */
+            grid-column-gap: 5px;
+            /* 列间距 */
+            grid-row-gap: 10px;
+            /* 行间距 */
+            align-items: center;
+        }
+
+        .box {
+            padding: 10px;
+            box-sizing: border-box;
+            border: 12px solid transparent;
+            border-image: url('古典边框图案.png') 30 round;
+            /* 假设古典边框图案图片路径为 '古典边框图案.png' */
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .box:nth-child(1) {
+            grid-column-start: 1;
+            grid-column-end: 2;
+            grid-row-start: 1;
+            grid-row-end: 2;
+            height: 50vh;
+        }
+
+        .box:nth-child(2) {
+            grid-column-start: 1;
+            grid-column-end: 2;
+            grid-row-start: 2;
+            grid-row-end: 3;
+            height: 50vh;
+        }
+
+        .box:nth-child(3) {
+            grid-column-start: 2;
+            grid-column-end: 3;
+            grid-row-start: 1;
+            grid-row-end: 3;
+            height: 100vh; /* 保持 grid cell 高度 */
+            /* border: 0; */ /* 移除此处的 border: 0，让 .box 的边框样式生效，如果需要的话 */
+            /* 如果确实不需要边框，可以在 #center 选择器中设置 border: none */
+
+            /* #center flex 布局 */
+            display: flex;
+            flex-direction: column;
+            /* height: 100%; */ /* grid item 默认会拉伸，此行可省略 */
+            padding: 10px; /* 保留内边距 */
+            box-sizing: border-box; /* 包含 padding */
+        }
+
+        /* 新增：确保 #map 不会被压缩 */
+        #map {
+            flex-shrink: 0;
+        }
+
+        /* 新增：包裹标题和列表的容器 */
+        .center-bottom {
+            flex-grow: 1; /* 填充剩余空间 */
+            display: flex;
+            flex-direction: column;
+            min-height: 0; /* 防止 flex item 内容溢出 */
+            margin-top: 10px; /* 与地图间距 */
+        }
+
+        /* 新增：调整标题样式 */
+        .center-bottom h3 {
+             margin-bottom: 5px; /* 标题和列表间距 */
+             flex-shrink: 0; /* 防止标题被压缩 */
+        }
+
+
+        .box:nth-child(4) {
+            grid-column-start: 3;
+            grid-column-end: 4;
+            grid-row-start: 1;
+            grid-row-end: 2;
+            height: 50vh;
+        }
+
+        .box:nth-child(5) {
+            grid-column-start: 3;
+            grid-column-end: 4;
+            grid-row-start: 2;
+            grid-row-end: 3;
+            height: 50vh;
+        }
+
+        #flow {
+            /* width: 200px; */ /* 移除固定宽度 */
+            /* height: 300px; */ /* 移除固定高度 */
+            overflow: hidden;
+            position: relative; /* 保留，用于 #news-list 定位 */
+            flex-grow: 1; /* 在 flex 容器中填充剩余空间 */
+            min-height: 0; /* 防止 flex item 内容溢出 */
+        }
+
+        #news-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            /* height: auto; */ /* 高度由内容和动画决定 */
+            animation: scroll 50s linear infinite;
+            /* 滚动动画 */
+            animation-play-state: running; /* 默认播放 */
+        }
+
+        /* 添加悬停暂停 */
+        #news-list:hover {
+            animation-play-state: paused;
+        }
+
+
+        #news-list li {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        @keyframes scroll {
+            0% {
+                transform: translateY(0);
+            }
+
+            100% {
+                /* 确保滚动完整内容，如果内容不足，JS需要处理复制 */
+                transform: translateY(-100%);
+            }
+        }
+
+        .news-title {
+            font-weight: bold;
+        }
+
+        .news-info {
+            color: gray;
+        }
+
+        #right2 {
+            /* background-size: contain; */ /* 移除，对 iframe 无效 */
+            /* background-repeat: no-repeat; */ /* 移除 */
+            /* background-position: center center; */ /* 移除 */
+            width: 100%; /* 确保 iframe 宽度充满容器 */
+            border: none; /* 移除 iframe 边框 */
+            height: 100%; /* 让 iframe 填充父容器高度 */
+            box-sizing: border-box; /* 如果父元素有 padding */
+        }
+
+
+             /* 添加按钮样式 */
+         .nav-buttons {
+             position: fixed;
+             top: 20px;
+             right: 20px;
+             z-index: 999;
+             display: flex;
+             gap: 15px;
+         }
+
+        .nav-button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #b33012, #c32929);
+            color: #fff !important;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(138, 3, 3, 0.3);
+            transition: all 0.3s ease;
+            border: 2px solid #b82020;
+        }
+
+        .nav-button:hover {
+            background: linear-gradient(135deg, #912121, #dd1616);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(120, 20, 20, 0.4);
+        }
+
+        .nav-button.active {
+            background: linear-gradient(135deg, #911d1d, #d81616) !important;
+            cursor: default !important;
+            transform: translateY(1px);
+            box-shadow: 0 2px 10px rgba(71, 5, 5, 0.3) !important;
+            border-color: #912222 !important;
+        }
+
+        /* 禁用激活按钮的悬停效果 */
+        .nav-button.active:hover {
+            background: linear-gradient(135deg, #952121, #d80e0e) !important;
+            transform: translateY(1px) !important;
+            box-shadow: 0 2px 10px rgba(83, 12, 12, 0.3) !important;
+        }
+    </style>
+</head>
+
+<body>
+<body background="three_2/03.png"
+      style="width:100%;background-repeat:no-repeat;background-attachment:fixed;background-size:100% 100%;margin:0;padding:0;">
+<div class="nav-buttons">
+    <a href="three.html" class="nav-button">网站首页</a>
+    <a href="three_2.html" class="nav-button active">医疗外科</a>
+    <a href="three_4.html" class="nav-button">法医学</a>
+    <a href="three_3.html" class="nav-button">内科学</a>
+</div>
+
+    <div class="header" id='header'>
+        <div class="header-title" id="title" style="text-align: center;">
+            <h1 style="color: #8b0000;">中国古代中药学可视化大屏</h1>
+        </div>
+    </div>
+    <div class="main" id='main'>
+        <div class='box' id="left1"></div>
+        <div class='box' id="left2"></div>
+        <div class='box' id="center">
+            <div id="map" style="width: 100%; height: 60%;"></div> 
+            <div class="center-bottom">
+                <h3 style="color: #8b4513;">疾病治疗中药药方速览</h3>
+                <div id="flow"> 
+                    <ul id="news-list"> </ul>
+                </div>
+            </div>
+        </div>
+        <div class='box' id="right1"></div>
+        <iframe class="box" id="right2" src="herbalDisplay.html"></iframe>
+    </div>
+    <script src="echarts.min.js"></script>
+    <script src="js/china.js"></script>
+    <script src="js/cases.js"></script>
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script src="js/flow-cases.js"></script>
+
+</body>
+
+</html>
